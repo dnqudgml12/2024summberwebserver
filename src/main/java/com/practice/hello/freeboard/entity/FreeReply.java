@@ -5,7 +5,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -24,6 +28,14 @@ public class FreeReply {
     @JsonBackReference
     private FreeComment freeComment;
 
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    //camelCase하면 db에서 언더 바로 읽는다(_);
+
+    @LastModifiedDate // 수정시간
+    @Column(name = "updated_at")
+    private LocalDateTime updateAt;
     private long sequenceNumber;
     @Builder
     public FreeReply(String content, String author, FreeComment freeComment, long sequenceNumber) {

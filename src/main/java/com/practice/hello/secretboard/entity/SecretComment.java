@@ -8,8 +8,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +37,14 @@ public class SecretComment {
     @JsonBackReference
     private SecretBoard secretBoard;
 
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    //camelCase하면 db에서 언더 바로 읽는다(_);
+
+    @LastModifiedDate // 수정시간
+    @Column(name = "updated_at")
+    private LocalDateTime updateAt;
 
     // 하나의 comment에 여러개의 reply가 들어 간다
     @OneToMany(mappedBy = "secretComment", cascade = CascadeType.ALL, orphanRemoval = true)

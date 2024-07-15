@@ -1,7 +1,6 @@
 package com.practice.hello.graduateboard.service;
 
 
-
 import com.practice.hello.graduateboard.dto.GradutateBoardCreateDTO;
 import com.practice.hello.graduateboard.entity.GraduateBoard;
 import com.practice.hello.graduateboard.entity.GraduateComment;
@@ -17,6 +16,7 @@ import com.practice.hello.secretboard.repository.SecretReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +24,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service // Service annotation
+@Slf4j
 public class GradutateBoardService {
 
 
@@ -39,7 +40,7 @@ public class GradutateBoardService {
 
         // First, delete all replies associated with each comment of the board
         List<GraduateComment> graduateComments = gradutateCommentRepository.findByBoardId(id);
-        for (GraduateComment graduateComment : graduateComments ) {
+        for (GraduateComment graduateComment : graduateComments) {
             gradutateReplyRepository.deleteAllByGraduateCommentId(graduateComment.getId());
         }
 
@@ -47,10 +48,11 @@ public class GradutateBoardService {
         gradutateCommentRepository.deleteAll(graduateComments);
 
         // Finally, delete the board
-       gradutateBoardRepository.deleteById(id);
+        gradutateBoardRepository.deleteById(id);
         gradutateBoardRepository.flush();
 
     }
+
     public GraduateBoard saveBoard(GradutateBoardCreateDTO dto) {
 
 
@@ -69,16 +71,17 @@ public class GradutateBoardService {
     }
 
 
-    public Optional<GraduateBoard> getBoardById(Long id){
+    public Optional<GraduateBoard> getBoardById(Long id) {
+ log.error("getBoardById 함수실행");
         return gradutateBoardRepository.findById(id);
     }
 
-    public List<GraduateBoard> readBoardAll(){
+    public List<GraduateBoard> readBoardAll() {
 
         return gradutateBoardRepository.findAll();
     }
 
-    public void deleteBoard(Long id){
+    public void deleteBoard(Long id) {
 
         gradutateBoardRepository.deleteById(id);
     }

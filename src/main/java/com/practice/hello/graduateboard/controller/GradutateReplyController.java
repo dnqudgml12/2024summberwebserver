@@ -1,5 +1,8 @@
 package com.practice.hello.graduateboard.controller;
 
+import com.practice.hello.graduateboard.dto.GradutateReplyCreatedDTO;
+import com.practice.hello.graduateboard.entity.GraduateReply;
+import com.practice.hello.graduateboard.service.GradutateReplyService;
 import com.practice.hello.secretboard.dto.SecretReplyCreatedDTO;
 import com.practice.hello.secretboard.entity.SecretReply;
 import com.practice.hello.secretboard.service.SecretReplyService;
@@ -15,12 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:5173")
 public class GradutateReplyController {
 
-    private final SecretReplyService secretReplyService;
+    private final GradutateReplyService gradutateReplyService;
     @PostMapping("/{boardId}/comments/{commentId}/replies")
-    public ResponseEntity<SecretReply> addReply(@PathVariable Long boardId, @PathVariable Long commentId, @RequestBody SecretReplyCreatedDTO dto) {
+    public ResponseEntity<GraduateReply> addReply(@PathVariable Long boardId, @PathVariable Long commentId, @RequestBody GradutateReplyCreatedDTO dto) {
         try {
-            SecretReply savedSecretReply = secretReplyService.saveReply(dto, commentId, boardId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedSecretReply);
+            GraduateReply saveGraduateReply = gradutateReplyService.saveReply(dto, commentId, boardId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saveGraduateReply);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -29,7 +32,7 @@ public class GradutateReplyController {
     @DeleteMapping("/{boardId}/comments/{commentId}/replies/{replyId}")
     public ResponseEntity<Void> deleteReply(@PathVariable Long boardId, @PathVariable Long commentId, @PathVariable Long replyId) {
         try {
-            secretReplyService.deleteReply(replyId, commentId, boardId);
+            gradutateReplyService.deleteReply(replyId, commentId, boardId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

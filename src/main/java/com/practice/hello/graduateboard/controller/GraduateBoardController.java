@@ -2,6 +2,9 @@ package com.practice.hello.graduateboard.controller;
 
 
 
+import com.practice.hello.graduateboard.dto.GradutateBoardCreateDTO;
+import com.practice.hello.graduateboard.entity.GraduateBoard;
+import com.practice.hello.graduateboard.service.GradutateBoardService;
 import com.practice.hello.secretboard.dto.SecretBoardCreateDTO;
 import com.practice.hello.secretboard.entity.SecretBoard;
 import com.practice.hello.secretboard.service.SecretBoardService;
@@ -25,32 +28,36 @@ public class GraduateBoardController {
 
 
 
-    private final SecretBoardService secretBoardService;
+    private final GradutateBoardService gradutateBoardService;
 
 
 
     @PostMapping("/save")
-    public ResponseEntity<SecretBoard> saveBoard(@RequestBody SecretBoardCreateDTO dto) {
+    public ResponseEntity<GraduateBoard > saveBoard(@RequestBody GradutateBoardCreateDTO dto) {
 
-        SecretBoard savedSecretBoard = secretBoardService.saveBoard(dto);
+       GraduateBoard savedGraduateBoard = gradutateBoardService.saveBoard(dto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body( savedSecretBoard);
+        return ResponseEntity.status(HttpStatus.CREATED).body( savedGraduateBoard);
     }
 
 
     @GetMapping("/read")
 
-    public ResponseEntity<List<SecretBoard>> readBoard() {
+    public ResponseEntity<List<GraduateBoard>> readBoard() {
 
-       List<SecretBoard> secretBoard= secretBoardService.readBoardAll();
+       List<GraduateBoard> graduateBoard= gradutateBoardService.readBoardAll();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(secretBoard);
+        return ResponseEntity.status(HttpStatus.CREATED).body(graduateBoard);
     }
     @GetMapping("/read/{id}")
 
-    public ResponseEntity<Optional<SecretBoard>> readBoard(@PathVariable Long id) {
+/*
+@PathVariable 사용: URL에 노출될 수 있는 ID와 같은 간단한 값의 경우.
+@RequestBody 사용: 요청 본문으로 전송되는 복잡한 개체(DTO)의 경우.
+*/
+    public ResponseEntity<Optional<GraduateBoard>> readBoard(@PathVariable Long id) {
 
-        Optional<SecretBoard> board =  secretBoardService.getBoardById(id);
+        Optional<GraduateBoard> board =  gradutateBoardService.getBoardById(id);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(board);
     }
@@ -58,7 +65,7 @@ public class GraduateBoardController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
         try {
-            secretBoardService.deleteBoardAndAdjustIds(id);
+            gradutateBoardService.deleteBoardAndAdjustIds(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             // Log the exception for debugging purposes
@@ -76,10 +83,10 @@ public class GraduateBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<SecretBoard> updateBoard(@PathVariable Long id, @RequestBody SecretBoardCreateDTO dto) {
+    public ResponseEntity<GraduateBoard> updateBoard(@PathVariable Long id, @RequestBody GradutateBoardCreateDTO dto) {
         try {
-            SecretBoard updatedFreeBoard = secretBoardService.updateBoard(id, dto);
-            return ResponseEntity.ok(updatedFreeBoard);
+            GraduateBoard updatedGraduateBoard = gradutateBoardService.updateBoard(id, dto);
+            return ResponseEntity.ok(updatedGraduateBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -88,20 +95,20 @@ public class GraduateBoardController {
 
 
     @PostMapping("/like/{id}")
-    public ResponseEntity<SecretBoard> likeBoard(@PathVariable Long id) {
+    public ResponseEntity<GraduateBoard> likeBoard(@PathVariable Long id) {
         try {
-            SecretBoard updatedFreeBoard = secretBoardService.likeBoard(id);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedFreeBoard);
+            GraduateBoard updatedGraduateBoard = gradutateBoardService.likeBoard(id);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedGraduateBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @DeleteMapping("/unlike/{id}")
-    public ResponseEntity<SecretBoard> unlikeBoard(@PathVariable Long id) {
+    public ResponseEntity<GraduateBoard> unlikeBoard(@PathVariable Long id) {
         try {
-            SecretBoard updatedFreeBoard = secretBoardService.unlikeBoard(id);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedFreeBoard);
+            GraduateBoard updatedGraduateBoard = gradutateBoardService.unlikeBoard(id);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedGraduateBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

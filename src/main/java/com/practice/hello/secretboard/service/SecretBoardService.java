@@ -48,18 +48,18 @@ public class SecretBoardService {
     public SecretBoard saveBoard(SecretBoardCreateDTO dto) {
 
 
-        SecretBoard freeBoard = dto.toEntity();
+        SecretBoard secretBoard = dto.toEntity();
 
 
-        secretBoardRepository.save(freeBoard);
+        secretBoardRepository.save(secretBoard);
 
-        return freeBoard;
+        return secretBoard;
     }
 
 
     //update시에는 entity 형태로 받아서 저장해야 한다
-    public SecretBoard saveBoard(SecretBoard freeBoard) {
-        return secretBoardRepository.save(freeBoard);
+    public SecretBoard saveBoard(SecretBoard secretBoard) {
+        return secretBoardRepository.save(secretBoard);
     }
 
 

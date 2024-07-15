@@ -78,8 +78,8 @@ public class SecretBoardController {
     @PutMapping("/update/{id}")
     public ResponseEntity<SecretBoard> updateBoard(@PathVariable Long id, @RequestBody SecretBoardCreateDTO dto) {
         try {
-            SecretBoard updatedFreeBoard = secretBoardService.updateBoard(id, dto);
-            return ResponseEntity.ok(updatedFreeBoard);
+            SecretBoard updatedSecretBoard = secretBoardService.updateBoard(id, dto);
+            return ResponseEntity.ok(updatedSecretBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -90,8 +90,8 @@ public class SecretBoardController {
     @PostMapping("/like/{id}")
     public ResponseEntity<SecretBoard> likeBoard(@PathVariable Long id) {
         try {
-            SecretBoard updatedFreeBoard = secretBoardService.likeBoard(id);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedFreeBoard);
+            SecretBoard updatedSecretBoard = secretBoardService.likeBoard(id);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedSecretBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -100,8 +100,8 @@ public class SecretBoardController {
     @DeleteMapping("/unlike/{id}")
     public ResponseEntity<SecretBoard> unlikeBoard(@PathVariable Long id) {
         try {
-            SecretBoard updatedFreeBoard = secretBoardService.unlikeBoard(id);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedFreeBoard);
+            SecretBoard updatedSecretBoard = secretBoardService.unlikeBoard(id);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedSecretBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
