@@ -1,6 +1,7 @@
 package com.practice.hello.freshman.service;
 
 
+import com.practice.hello.circle.entity.CircleBoard;
 import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
 import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.freeboard.entity.FreeComment;
@@ -14,6 +15,8 @@ import com.practice.hello.freshman.repository.FreshmanBoardRepository;
 import com.practice.hello.freshman.repository.FreshmanCommentRepository;
 import com.practice.hello.freshman.repository.FreshmanReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,6 +106,10 @@ public class FreshmanBoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         freshman.update(dto.title(), dto.content(), dto.author());
         return freshmanRepository.save(freshman);
+    }
+
+    public Page<Freshman> readBoardAll(Pageable pageable) {
+        return freshmanRepository.findAll(pageable);
     }
 
 }

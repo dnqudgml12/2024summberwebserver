@@ -7,6 +7,7 @@ import com.practice.hello.advertise.entity.AdvertiseComment;
 import com.practice.hello.advertise.repository.AdvertiseBoardRepository;
 import com.practice.hello.advertise.repository.AdvertiseCommentRepository;
 import com.practice.hello.advertise.repository.AdvertiseReplyRepository;
+import com.practice.hello.circle.entity.CircleBoard;
 import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
 import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.freeboard.entity.FreeComment;
@@ -14,6 +15,8 @@ import com.practice.hello.freeboard.repository.FreeBoardRepository;
 import com.practice.hello.freeboard.repository.FreeCommentRepository;
 import com.practice.hello.freeboard.repository.FreeReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,6 +108,10 @@ public class AdvertiseBoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         advertiseBoard.update(dto.title(), dto.content(), dto.author());
         return advertiseBoardRepository.save(advertiseBoard);
+    }
+
+    public Page<AdvertiseBoard> readBoardAll(Pageable pageable) {
+        return advertiseBoardRepository.findAll(pageable);
     }
 
 }

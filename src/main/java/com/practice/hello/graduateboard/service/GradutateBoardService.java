@@ -1,6 +1,7 @@
 package com.practice.hello.graduateboard.service;
 
 
+import com.practice.hello.freshman.entity.Freshman;
 import com.practice.hello.graduateboard.dto.GradutateBoardCreateDTO;
 import com.practice.hello.graduateboard.entity.GraduateBoard;
 import com.practice.hello.graduateboard.entity.GraduateComment;
@@ -14,6 +15,8 @@ import com.practice.hello.secretboard.repository.SecretBoardRepository;
 import com.practice.hello.secretboard.repository.SecretCommentRepository;
 import com.practice.hello.secretboard.repository.SecretReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -110,6 +113,10 @@ public class GradutateBoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         graduateBoard.update(dto.title(), dto.content(), dto.author());
         return gradutateBoardRepository.save(graduateBoard);
+    }
+
+    public Page<GraduateBoard> readBoardAll(Pageable pageable) {
+        return gradutateBoardRepository.findAll(pageable);
     }
 
 }

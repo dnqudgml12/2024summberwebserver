@@ -14,6 +14,8 @@ import com.practice.hello.freeboard.repository.FreeBoardRepository;
 import com.practice.hello.freeboard.repository.FreeCommentRepository;
 import com.practice.hello.freeboard.repository.FreeReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,6 +106,10 @@ public class CircleBoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         circleBoard.update(dto.title(), dto.content(), dto.author());
         return circleBoardRepository.save(circleBoard);
+    }
+
+    public Page<CircleBoard> readBoardAll(Pageable pageable) {
+        return circleBoardRepository.findAll(pageable);
     }
 
 }

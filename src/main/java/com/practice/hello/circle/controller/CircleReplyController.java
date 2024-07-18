@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/circleboard")
 @CrossOrigin(origins = "http://localhost:5173")
+//
 public class CircleReplyController {
 
     private final CircleReplyService circleReplyService;

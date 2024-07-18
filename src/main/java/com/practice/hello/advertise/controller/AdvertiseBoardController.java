@@ -4,10 +4,15 @@ package com.practice.hello.advertise.controller;
 import com.practice.hello.advertise.dto.AdvertiseBoardCreateDTO;
 import com.practice.hello.advertise.entity.AdvertiseBoard;
 import com.practice.hello.advertise.service.AdvertiseBoardService;
+import com.practice.hello.circle.entity.CircleBoard;
 import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
 import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.freeboard.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +28,8 @@ import java.util.Optional;
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/advertiseboard")
 @CrossOrigin(origins = "http://localhost:5173")
+//배포 후에
+//@CrossOrigin(origins = "https://2024-summberwebfront.vercel.app/")
 public class AdvertiseBoardController {
 
 
@@ -107,6 +114,21 @@ public class AdvertiseBoardController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @GetMapping("/read/paginated")
+    public ResponseEntity<Page<AdvertiseBoard>> readPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,// Use createdAt as the default sort field
+            @RequestParam(defaultValue = "desc") String sortDir)// Default to descending order
+    {
+
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<AdvertiseBoard> advertiseBoardPage = advetiseBoardService.readBoardAll(pageable);
+
+        return ResponseEntity.ok(advertiseBoardPage);
     }
 
 

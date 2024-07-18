@@ -8,6 +8,8 @@ import com.practice.hello.freeboard.repository.FreeBoardRepository;
 import com.practice.hello.freeboard.repository.FreeCommentRepository;
 import com.practice.hello.freeboard.repository.FreeReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +94,11 @@ public class FreeBoardService {
         return freeBoardRepository.save(freeBoard);
     }
 
+
+
+    // 게시물을 업데이트 하는 것 (put-> 전체를 다 update하므로)
+// findById를 통해 특정 id의 게시물을 찾고 해당 id를 통해 불러온 값이 비어 있지 않으면 그 id에 해당하는 값을 불러온다.
+//해당 하는 값의 entity에 있는 update함수를 사용한 뒤 update된 값을 db에 저장
     @Transactional
     public FreeBoard updateBoard(Long id, FreeBoardCreateDTO dto) {
         FreeBoard freeBoard = freeBoardRepository.findById(id)
@@ -100,4 +107,11 @@ public class FreeBoardService {
         return freeBoardRepository.save(freeBoard);
     }
 
+
+    public Page<FreeBoard> readBoardAll(Pageable pageable) {
+        return freeBoardRepository.findAll(pageable);
+    }
+
+
 }
+

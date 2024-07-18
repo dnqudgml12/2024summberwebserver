@@ -2,10 +2,15 @@ package com.practice.hello.secretboard.controller;
 
 
 
+import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.secretboard.dto.SecretBoardCreateDTO;
 import com.practice.hello.secretboard.entity.SecretBoard;
 import com.practice.hello.secretboard.service.SecretBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -106,6 +111,23 @@ public class SecretBoardController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/read/paginated")
+    public ResponseEntity<Page<SecretBoard>> readPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,// Use createdAt as the default sort field
+            @RequestParam(defaultValue = "desc") String sortDir)// Default to descending order
+    {
+
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<SecretBoard> secretBoardPage = secretBoardService.readBoardAll(pageable);
+
+        return ResponseEntity.ok(secretBoardPage);
+    }
+
+
 
 
 

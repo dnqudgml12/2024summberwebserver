@@ -5,6 +5,10 @@ import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
 import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.freeboard.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -106,6 +110,22 @@ public class FreeBoardController {
         }
     }
 
+
+    //서버에서 요청으로 페이지를 나누어 보내는 형식
+    @GetMapping("/read/paginated")
+    public ResponseEntity<Page<FreeBoard>> readPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,// Use createdAt as the default sort field
+            @RequestParam(defaultValue = "desc") String sortDir)// Default to descending order
+    {
+
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<FreeBoard> freeBoardPage = freeBoardService.readBoardAll(pageable);
+
+        return ResponseEntity.ok(freeBoardPage);
+    }
 
 
 

@@ -7,6 +7,7 @@ import com.practice.hello.freeboard.entity.FreeComment;
 import com.practice.hello.freeboard.repository.FreeBoardRepository;
 import com.practice.hello.freeboard.repository.FreeCommentRepository;
 import com.practice.hello.freeboard.repository.FreeReplyRepository;
+import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.social.dto.SocialBoardCreateDTO;
 import com.practice.hello.social.entity.SocialBoard;
 import com.practice.hello.social.entity.SocialComment;
@@ -14,6 +15,8 @@ import com.practice.hello.social.repository.SocialBoardRepository;
 import com.practice.hello.social.repository.SocialCommentRepository;
 import com.practice.hello.social.repository.SocialReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,6 +107,10 @@ public class SocialBoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         socialBoard.update(dto.title(), dto.content(), dto.author());
         return socialBoardRepository.save(socialBoard);
+    }
+
+    public Page<SocialBoard> readBoardAll(Pageable pageable) {
+        return socialBoardRepository.findAll(pageable);
     }
 
 }

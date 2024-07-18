@@ -2,6 +2,7 @@ package com.practice.hello.secretboard.service;
 
 
 
+import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.secretboard.dto.SecretBoardCreateDTO;
 import com.practice.hello.secretboard.entity.SecretBoard;
 import com.practice.hello.secretboard.entity.SecretComment;
@@ -9,6 +10,8 @@ import com.practice.hello.secretboard.repository.SecretBoardRepository;
 import com.practice.hello.secretboard.repository.SecretCommentRepository;
 import com.practice.hello.secretboard.repository.SecretReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,6 +102,10 @@ public class SecretBoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         secretBoard.update(dto.title(), dto.content(), dto.author());
         return secretBoardRepository.save(secretBoard);
+    }
+
+    public Page<SecretBoard> readBoardAll(Pageable pageable) {
+        return secretBoardRepository.findAll(pageable);
     }
 
 }

@@ -21,4 +21,5 @@ public interface FreeReplyRepository extends JpaRepository<FreeReply,Long> {
     @Modifying
     @Transactional
     void deleteAllByFreeCommentId(Long commentId); // Add this method
+    // Spring Data JPA가 메소드 이름을 기반으로 자동으로 쿼리생성 그래서 body가 필요 없다
 }

@@ -7,6 +7,7 @@ import com.practice.hello.freeboard.entity.FreeComment;
 import com.practice.hello.freeboard.repository.FreeBoardRepository;
 import com.practice.hello.freeboard.repository.FreeCommentRepository;
 import com.practice.hello.freeboard.repository.FreeReplyRepository;
+import com.practice.hello.freshman.entity.Freshman;
 import com.practice.hello.information.dto.InformationBoardCreateDTO;
 import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.information.entity.InformationComment;
@@ -14,6 +15,8 @@ import com.practice.hello.information.repository.InformationBoardRepository;
 import com.practice.hello.information.repository.InformationCommentRepository;
 import com.practice.hello.information.repository.InformationReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,6 +107,10 @@ public class InformationBoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         informationBoard.update(dto.title(), dto.content(), dto.author());
         return informationBoardRepository.save(informationBoard);
+    }
+
+    public Page<InformationBoard> readBoardAll(Pageable pageable) {
+        return informationBoardRepository.findAll(pageable);
     }
 
 }

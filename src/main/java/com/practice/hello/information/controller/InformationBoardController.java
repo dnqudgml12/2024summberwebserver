@@ -4,10 +4,15 @@ package com.practice.hello.information.controller;
 import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
 import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.freeboard.service.FreeBoardService;
+import com.practice.hello.graduateboard.entity.GraduateBoard;
 import com.practice.hello.information.dto.InformationBoardCreateDTO;
 import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.information.service.InformationBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -109,6 +114,20 @@ public class InformationBoardController {
         }
     }
 
+    @GetMapping("/read/paginated")
+    public ResponseEntity<Page<InformationBoard>> readPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,// Use createdAt as the default sort field
+            @RequestParam(defaultValue = "desc") String sortDir)// Default to descending order
+    {
+
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<InformationBoard> informationBoardPage = informationBoardService.readBoardAll(pageable);
+
+        return ResponseEntity.ok(informationBoardPage);
+    }
 
 
 
