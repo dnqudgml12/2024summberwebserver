@@ -5,11 +5,6 @@ import com.practice.hello.graduateboard.entity.GraduateBoard;
 import com.practice.hello.graduateboard.entity.GraduateComment;
 import com.practice.hello.graduateboard.repository.GradutateBoardRepository;
 import com.practice.hello.graduateboard.repository.GradutateCommentRepository;
-import com.practice.hello.secretboard.dto.SecretCommentCreateDTO;
-import com.practice.hello.secretboard.entity.SecretBoard;
-import com.practice.hello.secretboard.entity.SecretComment;
-import com.practice.hello.secretboard.repository.SecretBoardRepository;
-import com.practice.hello.secretboard.repository.SecretCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,10 +1,6 @@
 package com.practice.hello.information.controller;
 
 
-import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.service.FreeBoardService;
-import com.practice.hello.graduateboard.entity.GraduateBoard;
 import com.practice.hello.information.dto.InformationBoardCreateDTO;
 import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.information.service.InformationBoardService;

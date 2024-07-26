@@ -1,7 +1,5 @@
 package com.practice.hello.secretboard.dto;
 
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
 import com.practice.hello.secretboard.entity.SecretBoard;
 import com.practice.hello.secretboard.entity.SecretComment;
 

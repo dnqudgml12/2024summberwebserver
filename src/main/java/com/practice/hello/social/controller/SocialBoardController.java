@@ -1,10 +1,6 @@
 package com.practice.hello.social.controller;
 
 
-import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.service.FreeBoardService;
-import com.practice.hello.secretboard.entity.SecretBoard;
 import com.practice.hello.social.dto.SocialBoardCreateDTO;
 import com.practice.hello.social.entity.SocialBoard;
 import com.practice.hello.social.service.SocialBoardService;

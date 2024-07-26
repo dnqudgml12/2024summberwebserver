@@ -3,8 +3,6 @@ package com.practice.hello.advertise.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeReply;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -51,7 +49,7 @@ public class AdvertiseComment {
     // 하나의 comment에 여러개의 reply가 들어 간다
     @OneToMany(mappedBy = "advertiseComment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<com.practice.hello.advertise.entity.AdvertiseReply> replies;
+    private List<AdvertiseReply> replies;
 
     private Long sequenceNumber;
 

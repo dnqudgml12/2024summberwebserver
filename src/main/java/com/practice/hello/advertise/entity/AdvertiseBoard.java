@@ -1,10 +1,11 @@
 package com.practice.hello.advertise.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.practice.hello.freeboard.entity.FreeComment;
+import com.practice.hello.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;  //lombok -> annotation만드는거
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -34,6 +35,13 @@ public class AdvertiseBoard {
 
 
     private Long id;
+
+
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "advertiseBoards"}) // 순환 참조 방지 및 프론트에도 memberid값을 멤버로 보내게 하기 위해
+//@JsonBackReference
+    private Member member;
 
     // 명시 안해줘도 같은거를 찾는다
     //title이라는 컬럼을 찾아서 null이 아니도록 해준다.
@@ -66,16 +74,17 @@ public class AdvertiseBoard {
     //cascade = CascadeType.ALL -> 부모 자식 관계(수직관계 부모가 바뀌거나 삭제되면 자식도 영향 받음)
     // orphanRemoval -> 연관관계가 끊어지면 자식이 삭제가 됨
     @JsonManagedReference
-    private List<com.practice.hello.advertise.entity.AdvertiseComment> advertiseComment;
+    private List<AdvertiseComment> advertiseComment;
 
 
 
 
     @Builder //Setter역할 한다
-    public AdvertiseBoard(String title, String content, String author, int likes, List<AdvertiseComment> advertiseComment) {
+    public AdvertiseBoard(String title, String content, String author, int likes, List<AdvertiseComment> advertiseComment, Member member) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.member=member;
         this.likes = likes;
         this.advertiseComment = advertiseComment != null ? advertiseComment : new ArrayList<>();
         this.likeStatus = false; // Initialize likeStatus to false (not liked)
@@ -84,12 +93,13 @@ public class AdvertiseBoard {
 
     //수정 함수, DB안에 있는 객체를 수정 하니까
     // 객체 안에 수정은 이 안에서 이루어져야 한다.
-    public void update(String title, String content, String author) {
+    public void update(String title, String content) {
         this.title = title;
         this.content = content;
-        this.author = author;
+
 
     }
+
 
 
     public void setLikeStatus(boolean likeStatus) {

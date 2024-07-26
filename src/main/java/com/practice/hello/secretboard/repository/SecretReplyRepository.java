@@ -2,8 +2,6 @@ package com.practice.hello.secretboard.repository;
 
 
 
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.entity.FreeReply;
 import com.practice.hello.secretboard.entity.SecretComment;
 import com.practice.hello.secretboard.entity.SecretReply;
 import org.springframework.data.jpa.repository.JpaRepository;

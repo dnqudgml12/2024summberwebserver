@@ -1,8 +1,5 @@
 package com.practice.hello.social.controller;
 
-import com.practice.hello.freeboard.dto.FreeReplyCreatedDTO;
-import com.practice.hello.freeboard.entity.FreeReply;
-import com.practice.hello.freeboard.service.FreeReplyService;
 import com.practice.hello.social.dto.SocialReplyCreatedDTO;
 import com.practice.hello.social.entity.SocialReply;
 import com.practice.hello.social.service.SocialReplyService;

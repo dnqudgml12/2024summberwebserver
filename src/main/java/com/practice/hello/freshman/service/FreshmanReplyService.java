@@ -1,10 +1,5 @@
 package com.practice.hello.freshman.service;
 
-import com.practice.hello.freeboard.dto.FreeReplyCreatedDTO;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.entity.FreeReply;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
-import com.practice.hello.freeboard.repository.FreeReplyRepository;
 import com.practice.hello.freshman.dto.FreshmanReplyCreatedDTO;
 import com.practice.hello.freshman.entity.FreshmanComment;
 import com.practice.hello.freshman.entity.FreshmanReply;

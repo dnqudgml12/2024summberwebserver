@@ -7,14 +7,10 @@ import com.practice.hello.advertise.entity.AdvertiseComment;
 import com.practice.hello.advertise.repository.AdvertiseBoardRepository;
 import com.practice.hello.advertise.repository.AdvertiseCommentRepository;
 import com.practice.hello.advertise.repository.AdvertiseReplyRepository;
-import com.practice.hello.circle.entity.CircleBoard;
-import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.repository.FreeBoardRepository;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
-import com.practice.hello.freeboard.repository.FreeReplyRepository;
+import com.practice.hello.member.entity.Member;
+import com.practice.hello.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,19 +22,30 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service // Service annotation
+@Slf4j
 public class AdvertiseBoardService {
 
 
     private final AdvertiseBoardRepository advertiseBoardRepository;
     private final AdvertiseCommentRepository advertiseCommentRepository;
 
-
+    private final MemberRepository memberRepository;
     private final AdvertiseReplyRepository advertiseReplyRepository;
 
     @Transactional
-    public void deleteBoardAndAdjustIds(Long id) {
+    public void deleteBoardAndAdjustIds(Long id, String uId) {
         // First delete all comments associated with the board
 
+        Member member = memberRepository.findByUid(uId)
+                .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
+
+
+        AdvertiseBoard advertiseBoard = advertiseBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id에 해당하는 게시글 없어용"));
+
+        if (!advertiseBoard.getMember().getUid().equals(uId)) {
+            throw new IllegalArgumentException("본인 게시글만 삭제 가능해용");
+        }
         // First, delete all replies associated with each comment of the board
         List<AdvertiseComment> advertiseComments = advertiseCommentRepository.findByBoardId(id);
         for (AdvertiseComment advertiseComment : advertiseComments) {
@@ -53,10 +60,13 @@ public class AdvertiseBoardService {
         advertiseBoardRepository.flush();
 
     }
-    public AdvertiseBoard saveBoard(AdvertiseBoardCreateDTO dto) {
+    public AdvertiseBoard saveBoard(AdvertiseBoardCreateDTO dto,String uId) {
 
+        log.info("Creating post for user: {}", uId);
+        Member member = memberRepository.findByUid(uId)
+                .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
 
-        AdvertiseBoard advertiseBoard = dto.toEntity();
+        AdvertiseBoard advertiseBoard = dto.toEntity(member);
 
 
         advertiseBoardRepository.save(advertiseBoard);
@@ -103,10 +113,17 @@ public class AdvertiseBoardService {
     }
 
     @Transactional
-    public AdvertiseBoard updateBoard(Long id, AdvertiseBoardCreateDTO dto) {
+    public AdvertiseBoard updateBoard(Long id, AdvertiseBoardCreateDTO dto,String uId) {
+        Member member = memberRepository.findByUid(uId)
+                .orElseThrow(() -> new IllegalArgumentException("이 계정에 해당하는 사람없어용"));
+
         AdvertiseBoard advertiseBoard = advertiseBoardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Board not found"));
-        advertiseBoard.update(dto.title(), dto.content(), dto.author());
+                .orElseThrow(() -> new RuntimeException("해당 id에 해당하는 게시글 없어용"));
+
+        if (!advertiseBoard .getMember().getUid().equals(uId)) {
+            throw new IllegalArgumentException("본인 게시글만 수정 가능해용");
+        }
+        advertiseBoard.update(dto.title(), dto.content());
         return advertiseBoardRepository.save(advertiseBoard);
     }
 

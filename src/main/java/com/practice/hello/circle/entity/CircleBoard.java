@@ -1,10 +1,11 @@
 package com.practice.hello.circle.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.practice.hello.freeboard.entity.FreeComment;
+import com.practice.hello.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;  //lombok -> annotation만드는거
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -34,6 +35,12 @@ public class CircleBoard {
 
 
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "circleBoards"}) // 순환 참조 방지 및 프론트에도 memberid값을 멤버로 보내게 하기 위해
+//@JsonBackReference
+    private Member member;
 
     // 명시 안해줘도 같은거를 찾는다
     //title이라는 컬럼을 찾아서 null이 아니도록 해준다.
@@ -66,19 +73,21 @@ public class CircleBoard {
     //cascade = CascadeType.ALL -> 부모 자식 관계(수직관계 부모가 바뀌거나 삭제되면 자식도 영향 받음)
     // orphanRemoval -> 연관관계가 끊어지면 자식이 삭제가 됨
     @JsonManagedReference
-    private List<com.practice.hello.circle.entity.CircleComment> circleComment;
+    private List<CircleComment> circleComment;
 
 
-
+    @Column(name = "image_path")
+    private String imagePath;
 
     @Builder //Setter역할 한다
-    public CircleBoard(String title, String content, String author, int likes, List<CircleComment> circleComment) {
+    public CircleBoard(String title, String content, String author, int likes, List<CircleComment> circleComment,String imagePath) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.likes = likes;
         this.circleComment = circleComment != null ? circleComment : new ArrayList<>();
         this.likeStatus = false; // Initialize likeStatus to false (not liked)
+        this.imagePath = imagePath;
     }
 
 
@@ -99,6 +108,9 @@ public class CircleBoard {
         } else {
             this.likes--;
         }
+    }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
 

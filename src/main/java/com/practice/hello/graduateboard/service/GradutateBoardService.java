@@ -1,25 +1,20 @@
 package com.practice.hello.graduateboard.service;
 
 
-import com.practice.hello.freshman.entity.Freshman;
 import com.practice.hello.graduateboard.dto.GradutateBoardCreateDTO;
 import com.practice.hello.graduateboard.entity.GraduateBoard;
 import com.practice.hello.graduateboard.entity.GraduateComment;
 import com.practice.hello.graduateboard.repository.GradutateBoardRepository;
 import com.practice.hello.graduateboard.repository.GradutateCommentRepository;
 import com.practice.hello.graduateboard.repository.GradutateReplyRepository;
-import com.practice.hello.secretboard.dto.SecretBoardCreateDTO;
-import com.practice.hello.secretboard.entity.SecretBoard;
-import com.practice.hello.secretboard.entity.SecretComment;
-import com.practice.hello.secretboard.repository.SecretBoardRepository;
-import com.practice.hello.secretboard.repository.SecretCommentRepository;
-import com.practice.hello.secretboard.repository.SecretReplyRepository;
+import com.practice.hello.member.entity.Member;
+import com.practice.hello.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,13 +29,23 @@ public class GradutateBoardService {
     private final GradutateBoardRepository gradutateBoardRepository;
     private final GradutateCommentRepository gradutateCommentRepository;
 
-
+    private final MemberRepository memberRepository;
     private final GradutateReplyRepository gradutateReplyRepository;
 
     @Transactional
-    public void deleteBoardAndAdjustIds(Long id) {
+    public void deleteBoardAndAdjustIds(Long id, String uId) {
+
         // First delete all comments associated with the board
 
+        Member member = memberRepository.findByUid(uId)
+                .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
+
+        GraduateBoard graduateBoard = gradutateBoardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id에 해당하는 게시글 없어용"));
+
+        if (!graduateBoard.getMember().getUid().equals(uId)) {
+            throw new IllegalArgumentException("본인 게시글만 삭제 가능해용");
+        }
         // First, delete all replies associated with each comment of the board
         List<GraduateComment> graduateComments = gradutateCommentRepository.findByBoardId(id);
         for (GraduateComment graduateComment : graduateComments) {
@@ -56,10 +61,13 @@ public class GradutateBoardService {
 
     }
 
-    public GraduateBoard saveBoard(GradutateBoardCreateDTO dto) {
+    public GraduateBoard saveBoard(GradutateBoardCreateDTO dto,String uId) {
 
+        log.info("Creating post for user: {}", uId);
+        Member member = memberRepository.findByUid(uId)
+                .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
 
-        GraduateBoard graduateBoard = dto.toEntity();
+        GraduateBoard graduateBoard = dto.toEntity(member);
 
 
         gradutateBoardRepository.save(graduateBoard);
@@ -108,10 +116,15 @@ public class GradutateBoardService {
     }
 
     @Transactional
-    public GraduateBoard updateBoard(Long id, GradutateBoardCreateDTO dto) {
+    public GraduateBoard updateBoard(Long id, GradutateBoardCreateDTO dto,String uId) {
+        Member member = memberRepository.findByUid(uId)
+                .orElseThrow(() -> new IllegalArgumentException("이 계정에 해당하는 사람없어용"));
         GraduateBoard graduateBoard = gradutateBoardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Board not found"));
-        graduateBoard.update(dto.title(), dto.content(), dto.author());
+                .orElseThrow(() -> new IllegalArgumentException("해당 id에 해당하는 게시글 없어용"));
+        if (!graduateBoard .getMember().getUid().equals(uId)) {
+            throw new IllegalArgumentException("본인 게시글만 수정 가능해용");
+        }
+        graduateBoard.update(dto.title(), dto.content());
         return gradutateBoardRepository.save(graduateBoard);
     }
 

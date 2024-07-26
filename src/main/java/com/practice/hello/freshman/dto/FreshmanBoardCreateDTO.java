@@ -1,10 +1,9 @@
 package com.practice.hello.freshman.dto;
 
 
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
 import com.practice.hello.freshman.entity.Freshman;
 import com.practice.hello.freshman.entity.FreshmanComment;
+import com.practice.hello.member.entity.Member;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +11,10 @@ import java.util.List;
 
 public record FreshmanBoardCreateDTO(String title, String author, String content, int likes, List<FreshmanComment> freshmanComments){
 
-    public Freshman toEntity() {
+    public Freshman toEntity(Member member) {
         return Freshman.builder()
                 .title(title)
-                .author(author)
+                .author(member.getNickname())
                 .content(content)
                 .likes(0) // Default to 0 likes when creating a new board
                 .freshmanComment(new ArrayList<>()) // Initialize with an empty list of comments

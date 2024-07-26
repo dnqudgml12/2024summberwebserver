@@ -2,8 +2,6 @@ package com.practice.hello.advertise.dto;
 
 import com.practice.hello.advertise.entity.AdvertiseBoard;
 import com.practice.hello.advertise.entity.AdvertiseComment;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
 
 import java.util.ArrayList;
 

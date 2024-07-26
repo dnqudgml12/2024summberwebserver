@@ -4,9 +4,6 @@ package com.practice.hello.circle.controller;
 import com.practice.hello.circle.dto.CircleBoardCreateDTO;
 import com.practice.hello.circle.entity.CircleBoard;
 import com.practice.hello.circle.service.CircleBoardService;
-import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +12,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +36,7 @@ public class CircleBoardController {
     private final CircleBoardService circleBoardService;
 
 
-
+/*
     @PostMapping("/save")
     public ResponseEntity<CircleBoard> saveBoard(@RequestBody CircleBoardCreateDTO dto) {
 
@@ -42,7 +44,33 @@ public class CircleBoardController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCircleBoard);
     }
+*/
+@PostMapping("/save")
+public ResponseEntity<CircleBoard> saveBoard(@RequestParam("title") String title,
+                                             @RequestParam("author") String author,
+                                             @RequestParam("content") String content,
+                                             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
 
+    CircleBoardCreateDTO dto = new CircleBoardCreateDTO(title, author, content, 0, null, imageFile);
+
+    String imageUrl = "";
+    if (imageFile != null && !imageFile.isEmpty()) {
+        try {
+            String fileName = imageFile.getOriginalFilename();
+            String uploadDir = "uploads/";
+            Path path = Paths.get(uploadDir + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, imageFile.getBytes());
+            imageUrl = "/uploads/" + fileName;  // 서버의 기본 URL을 포함한 경로로 수정
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    CircleBoard savedCircleBoard = circleBoardService.saveBoard(dto, imageUrl);
+    return ResponseEntity.status(HttpStatus.CREATED).body(savedCircleBoard);
+}
 
     @GetMapping("/read")
 
@@ -78,9 +106,38 @@ public class CircleBoardController {
 
 
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CircleBoard> updateBoard(@PathVariable Long id,
+                                                   @RequestParam("title") String title,
+                                                   @RequestParam("author") String author,
+                                                   @RequestParam("content") String content,
+                                                   @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+        CircleBoardCreateDTO dto = new CircleBoardCreateDTO(title, author, content, 0, null, imageFile);
 
+        String imageUrl = "";
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                String fileName = imageFile.getOriginalFilename();
+                String uploadDir = "uploads/";
+                Path path = Paths.get(uploadDir + fileName);
+                Files.createDirectories(path.getParent());
+                Files.write(path, imageFile.getBytes());
+                imageUrl = path.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
 
+        try {
+            CircleBoard updatedCircleBoard = circleBoardService.updateBoard(id, dto, imageUrl);
+            return ResponseEntity.ok(updatedCircleBoard);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
+/*
     @PutMapping("/update/{id}")
     public ResponseEntity<CircleBoard> updateBoard(@PathVariable Long id, @RequestBody CircleBoardCreateDTO dto) {
         try {
@@ -90,7 +147,7 @@ public class CircleBoardController {
             return ResponseEntity.notFound().build();
         }
     }
-
+*/
 
 
     @PostMapping("/like/{id}")

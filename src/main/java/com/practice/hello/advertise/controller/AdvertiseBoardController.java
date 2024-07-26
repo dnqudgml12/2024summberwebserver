@@ -4,11 +4,8 @@ package com.practice.hello.advertise.controller;
 import com.practice.hello.advertise.dto.AdvertiseBoardCreateDTO;
 import com.practice.hello.advertise.entity.AdvertiseBoard;
 import com.practice.hello.advertise.service.AdvertiseBoardService;
-import com.practice.hello.circle.entity.CircleBoard;
-import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +28,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:5173")
 //배포 후에
 //@CrossOrigin(origins = "https://2024-summberwebfront.vercel.app/")
+@Slf4j
 public class AdvertiseBoardController {
 
 
@@ -39,9 +38,9 @@ public class AdvertiseBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<AdvertiseBoard> saveBoard(@RequestBody AdvertiseBoardCreateDTO dto) {
-
-        AdvertiseBoard savedAdvertiseBoard = advetiseBoardService.saveBoard(dto);
+    public ResponseEntity<AdvertiseBoard> saveBoard(@RequestBody AdvertiseBoardCreateDTO dto, Principal principal) {
+        String uId = principal.getName();
+        AdvertiseBoard savedAdvertiseBoard = advetiseBoardService.saveBoard(dto, uId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAdvertiseBoard);
     }
@@ -65,9 +64,11 @@ public class AdvertiseBoardController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,Principal principal) {
+        String uId = principal.getName();
+        System.out.println("Principal email: " + uId); // Debug statement
         try {
-            advetiseBoardService.deleteBoardAndAdjustIds(id);
+            advetiseBoardService.deleteBoardAndAdjustIds(id,uId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             // Log the exception for debugging purposes
@@ -85,9 +86,12 @@ public class AdvertiseBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<AdvertiseBoard> updateBoard(@PathVariable Long id, @RequestBody AdvertiseBoardCreateDTO dto) {
+    public ResponseEntity<AdvertiseBoard> updateBoard(@PathVariable Long id, @RequestBody AdvertiseBoardCreateDTO dto, Principal principal) {
         try {
-            AdvertiseBoard updatedAdvertiseBoard = advetiseBoardService.updateBoard(id, dto);
+            String uId = principal.getName();
+            log.debug("Updating board with ID: {}, by user: {}", id, uId); // 디버그 로그 추가
+            AdvertiseBoard updatedAdvertiseBoard = advetiseBoardService.updateBoard(id, dto,uId);
+            log.debug("Updated board details: {}", updatedAdvertiseBoard); // 디버그 로그 추가
             return ResponseEntity.ok(updatedAdvertiseBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -128,7 +132,15 @@ public class AdvertiseBoardController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         Page<AdvertiseBoard> advertiseBoardPage = advetiseBoardService.readBoardAll(pageable);
 
-        return ResponseEntity.ok(advertiseBoardPage);
+
+        if (page == 0 && advertiseBoardPage.getContent().size() < size) {
+            // If on the first page and the number of items is less than the size, return the content
+            return ResponseEntity.ok(advertiseBoardPage);
+        } else if (advertiseBoardPage.hasContent()) {
+            return ResponseEntity.ok(advertiseBoardPage);
+        } else {
+            return ResponseEntity.ok(advertiseBoardPage);
+        }
     }
 
 

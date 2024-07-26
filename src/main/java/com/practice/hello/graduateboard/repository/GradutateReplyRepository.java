@@ -4,8 +4,6 @@ package com.practice.hello.graduateboard.repository;
 
 import com.practice.hello.graduateboard.entity.GraduateComment;
 import com.practice.hello.graduateboard.entity.GraduateReply;
-import com.practice.hello.secretboard.entity.SecretComment;
-import com.practice.hello.secretboard.entity.SecretReply;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;

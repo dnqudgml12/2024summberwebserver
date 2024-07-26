@@ -1,6 +1,5 @@
 package com.practice.hello.freshman.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.practice.hello.freeboard.entity.FreeComment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

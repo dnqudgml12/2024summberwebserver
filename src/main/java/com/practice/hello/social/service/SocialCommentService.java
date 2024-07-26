@@ -1,10 +1,5 @@
 package com.practice.hello.social.service;
 
-import com.practice.hello.freeboard.dto.FreeCommentCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.repository.FreeBoardRepository;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
 import com.practice.hello.social.dto.SocialCommentCreateDTO;
 import com.practice.hello.social.entity.SocialBoard;
 import com.practice.hello.social.entity.SocialComment;

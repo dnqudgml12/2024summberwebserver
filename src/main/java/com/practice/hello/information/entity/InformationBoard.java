@@ -1,10 +1,9 @@
 package com.practice.hello.information.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.practice.hello.freeboard.entity.FreeComment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;  //lombok -> annotation만드는거
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -66,7 +65,7 @@ public class InformationBoard {
     //cascade = CascadeType.ALL -> 부모 자식 관계(수직관계 부모가 바뀌거나 삭제되면 자식도 영향 받음)
     // orphanRemoval -> 연관관계가 끊어지면 자식이 삭제가 됨
     @JsonManagedReference
-    private List<com.practice.hello.information.entity.InformationComment> informationComment;
+    private List<InformationComment> informationComment;
 
 
 

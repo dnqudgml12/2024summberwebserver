@@ -1,8 +1,5 @@
 package com.practice.hello.secretboard.controller;
 
-import com.practice.hello.freeboard.dto.FreeCommentCreateDTO;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.service.FreeCommentService;
 import com.practice.hello.secretboard.dto.SecretCommentCreateDTO;
 import com.practice.hello.secretboard.entity.SecretComment;
 import com.practice.hello.secretboard.service.SecretCommentService;

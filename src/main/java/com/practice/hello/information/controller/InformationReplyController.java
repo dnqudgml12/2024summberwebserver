@@ -1,8 +1,5 @@
 package com.practice.hello.information.controller;
 
-import com.practice.hello.freeboard.dto.FreeReplyCreatedDTO;
-import com.practice.hello.freeboard.entity.FreeReply;
-import com.practice.hello.freeboard.service.FreeReplyService;
 import com.practice.hello.information.dto.InformationReplyCreatedDTO;
 import com.practice.hello.information.entity.InformationReply;
 import com.practice.hello.information.service.InformationReplyService;

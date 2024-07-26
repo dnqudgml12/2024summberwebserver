@@ -1,9 +1,11 @@
 package com.practice.hello.freeboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.practice.hello.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;  //lombok -> annotation만드는거
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -34,6 +36,12 @@ public class FreeBoard {
 
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+   @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "freeBoards"}) // 순환 참조 방지 및 프론트에도 memberid값을 멤버로 보내게 하기 위해
+//@JsonBackReference
+    private Member member;
+
     // 명시 안해줘도 같은거를 찾는다
     //title이라는 컬럼을 찾아서 null이 아니도록 해준다.
     // db테이블이랑 mapping,
@@ -43,6 +51,8 @@ public class FreeBoard {
 
     @Column(name="content", nullable = false )
     private String content;
+
+
 
 
 
@@ -71,11 +81,12 @@ public class FreeBoard {
 
 
     @Builder //Setter역할 한다
-    public FreeBoard(String title, String content, String author, int likes, List<FreeComment> freeComment) {
+    public FreeBoard(String title, String content, String author, int likes, List<FreeComment> freeComment,Member member) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.likes = likes;
+        this.member = member;
         this.freeComment = freeComment != null ? freeComment : new ArrayList<>();
         this.likeStatus = false; // Initialize likeStatus to false (not liked)
     }
@@ -83,10 +94,9 @@ public class FreeBoard {
 
     //수정 함수, DB안에 있는 객체를 수정 하니까
     // 객체 안에 수정은 이 안에서 이루어져야 한다.
-    public void update(String title, String content, String author) {
+    public void update(String title, String content) {
         this.title = title;
         this.content = content;
-        this.author = author;
 
     }
 

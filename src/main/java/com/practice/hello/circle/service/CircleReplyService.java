@@ -5,11 +5,6 @@ import com.practice.hello.circle.entity.CircleComment;
 import com.practice.hello.circle.entity.CircleReply;
 import com.practice.hello.circle.repository.CircleCommentRepository;
 import com.practice.hello.circle.repository.CircleReplyRepository;
-import com.practice.hello.freeboard.dto.FreeReplyCreatedDTO;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.entity.FreeReply;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
-import com.practice.hello.freeboard.repository.FreeReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,5 @@
 package com.practice.hello.social.dto;
 
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.entity.FreeReply;
 import com.practice.hello.social.entity.SocialComment;
 import com.practice.hello.social.entity.SocialReply;
 

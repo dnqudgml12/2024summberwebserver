@@ -2,8 +2,6 @@ package com.practice.hello.graduateboard.dto;
 
 import com.practice.hello.graduateboard.entity.GraduateBoard;
 import com.practice.hello.graduateboard.entity.GraduateComment;
-import com.practice.hello.secretboard.entity.SecretBoard;
-import com.practice.hello.secretboard.entity.SecretComment;
 
 import java.util.ArrayList;
 

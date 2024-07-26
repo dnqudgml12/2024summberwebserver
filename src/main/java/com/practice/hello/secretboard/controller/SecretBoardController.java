@@ -2,7 +2,6 @@ package com.practice.hello.secretboard.controller;
 
 
 
-import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.secretboard.dto.SecretBoardCreateDTO;
 import com.practice.hello.secretboard.entity.SecretBoard;
 import com.practice.hello.secretboard.service.SecretBoardService;

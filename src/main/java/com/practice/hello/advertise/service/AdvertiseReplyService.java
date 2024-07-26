@@ -5,11 +5,6 @@ import com.practice.hello.advertise.entity.AdvertiseComment;
 import com.practice.hello.advertise.entity.AdvertiseReply;
 import com.practice.hello.advertise.repository.AdvertiseCommentRepository;
 import com.practice.hello.advertise.repository.AdvertiseReplyRepository;
-import com.practice.hello.freeboard.dto.FreeReplyCreatedDTO;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.entity.FreeReply;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
-import com.practice.hello.freeboard.repository.FreeReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

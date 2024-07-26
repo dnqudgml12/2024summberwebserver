@@ -5,6 +5,7 @@ import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
 import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.freeboard.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,7 @@ import java.util.Optional;
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/freeboard")
 @CrossOrigin(origins = "http://localhost:5173")
+@Slf4j
 public class FreeBoardController {
 
 
@@ -33,10 +36,9 @@ public class FreeBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<FreeBoard> saveBoard(@RequestBody FreeBoardCreateDTO dto) {
-
-        FreeBoard savedFreeBoard = freeBoardService.saveBoard(dto);
-
+    public ResponseEntity<FreeBoard> saveBoard(@RequestBody FreeBoardCreateDTO dto, Principal principal) {
+        String uId = principal.getName();
+        FreeBoard savedFreeBoard = freeBoardService.saveBoard(dto, uId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedFreeBoard);
     }
 
@@ -59,9 +61,11 @@ public class FreeBoardController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,Principal principal) {
+        String uId = principal.getName();
+        System.out.println("Principal email: " + uId); // Debug statement
         try {
-            freeBoardService.deleteBoardAndAdjustIds(id);
+            freeBoardService.deleteBoardAndAdjustIds(id, uId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             // Log the exception for debugging purposes
@@ -79,14 +83,19 @@ public class FreeBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<FreeBoard> updateBoard(@PathVariable Long id, @RequestBody FreeBoardCreateDTO dto) {
+    public ResponseEntity<FreeBoard> updateBoard(@PathVariable Long id, @RequestBody FreeBoardCreateDTO dto, Principal principal) {
         try {
-            FreeBoard updatedFreeBoard = freeBoardService.updateBoard(id, dto);
+            String uId = principal.getName();
+            log.debug("Updating board with ID: {}, by user: {}", id, uId); // 디버그 로그 추가
+            FreeBoard updatedFreeBoard = freeBoardService.updateBoard(id, dto, uId);
+            log.debug("Updated board details: {}", updatedFreeBoard); // 디버그 로그 추가
             return ResponseEntity.ok(updatedFreeBoard);
         } catch (RuntimeException e) {
+            log.error("Error updating board", e); // 예외 로그 추가
             return ResponseEntity.notFound().build();
         }
     }
+
 
 
 
@@ -124,7 +133,15 @@ public class FreeBoardController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         Page<FreeBoard> freeBoardPage = freeBoardService.readBoardAll(pageable);
 
-        return ResponseEntity.ok(freeBoardPage);
+        if (page == 0 && freeBoardPage.getContent().size() < size) {
+            // If on the first page and the number of items is less than the size, return the content
+            return ResponseEntity.ok(freeBoardPage);
+        } else if (freeBoardPage.hasContent()) {
+            return ResponseEntity.ok(freeBoardPage);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+
     }
 
 

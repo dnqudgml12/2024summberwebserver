@@ -1,6 +1,5 @@
 package com.practice.hello.social.repository;
 
-import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.social.entity.SocialBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

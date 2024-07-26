@@ -1,7 +1,5 @@
 package com.practice.hello.freshman.dto;
 
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
 import com.practice.hello.freshman.entity.Freshman;
 import com.practice.hello.freshman.entity.FreshmanComment;
 

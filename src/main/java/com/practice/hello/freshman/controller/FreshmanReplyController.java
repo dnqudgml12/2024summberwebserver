@@ -1,8 +1,5 @@
 package com.practice.hello.freshman.controller;
 
-import com.practice.hello.freeboard.dto.FreeReplyCreatedDTO;
-import com.practice.hello.freeboard.entity.FreeReply;
-import com.practice.hello.freeboard.service.FreeReplyService;
 import com.practice.hello.freshman.dto.FreshmanReplyCreatedDTO;
 import com.practice.hello.freshman.entity.FreshmanReply;
 import com.practice.hello.freshman.service.FreshmanReplyService;

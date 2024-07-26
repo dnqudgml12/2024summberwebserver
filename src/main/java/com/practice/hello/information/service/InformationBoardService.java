@@ -1,13 +1,6 @@
 package com.practice.hello.information.service;
 
 
-import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.repository.FreeBoardRepository;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
-import com.practice.hello.freeboard.repository.FreeReplyRepository;
-import com.practice.hello.freshman.entity.Freshman;
 import com.practice.hello.information.dto.InformationBoardCreateDTO;
 import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.information.entity.InformationComment;

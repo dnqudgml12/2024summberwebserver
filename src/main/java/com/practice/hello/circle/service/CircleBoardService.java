@@ -7,12 +7,6 @@ import com.practice.hello.circle.entity.CircleComment;
 import com.practice.hello.circle.repository.CircleBoardRepository;
 import com.practice.hello.circle.repository.CircleCommentRepository;
 import com.practice.hello.circle.repository.CircleReplyRepository;
-import com.practice.hello.freeboard.dto.FreeBoardCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.repository.FreeBoardRepository;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
-import com.practice.hello.freeboard.repository.FreeReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +46,8 @@ public class CircleBoardService {
         circleBoardRepository.flush();
 
     }
+
+    /*
     public CircleBoard saveBoard(CircleBoardCreateDTO dto) {
 
 
@@ -61,6 +57,12 @@ public class CircleBoardService {
         circleBoardRepository.save(circleBoard);
 
         return circleBoard;
+    }
+
+     */
+    public CircleBoard saveBoard(CircleBoardCreateDTO dto, String imageUrl) {
+        CircleBoard circleBoard = dto.toEntity(imageUrl);
+        return circleBoardRepository.save(circleBoard);
     }
 
 
@@ -100,6 +102,7 @@ public class CircleBoardService {
         return circleBoardRepository.save(circleBoard);
     }
 
+/*
     @Transactional
     public CircleBoard updateBoard(Long id, CircleBoardCreateDTO dto) {
         CircleBoard circleBoard = circleBoardRepository.findById(id)
@@ -107,7 +110,17 @@ public class CircleBoardService {
         circleBoard.update(dto.title(), dto.content(), dto.author());
         return circleBoardRepository.save(circleBoard);
     }
-
+*/
+@Transactional
+public CircleBoard updateBoard(Long id, CircleBoardCreateDTO dto, String imageUrl) {
+    CircleBoard circleBoard = circleBoardRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Board not found"));
+    circleBoard.update(dto.title(), dto.content(), dto.author());
+    if (!imageUrl.isEmpty()) {
+        circleBoard.setImagePath(imageUrl);
+    }
+    return circleBoardRepository.save(circleBoard);
+}
     public Page<CircleBoard> readBoardAll(Pageable pageable) {
         return circleBoardRepository.findAll(pageable);
     }

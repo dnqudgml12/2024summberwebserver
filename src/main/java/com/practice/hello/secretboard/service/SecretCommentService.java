@@ -1,10 +1,5 @@
 package com.practice.hello.secretboard.service;
 
-import com.practice.hello.freeboard.dto.FreeCommentCreateDTO;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.repository.FreeBoardRepository;
-import com.practice.hello.freeboard.repository.FreeCommentRepository;
 import com.practice.hello.secretboard.dto.SecretCommentCreateDTO;
 import com.practice.hello.secretboard.entity.SecretBoard;
 import com.practice.hello.secretboard.entity.SecretComment;

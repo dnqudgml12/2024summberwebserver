@@ -2,8 +2,6 @@ package com.practice.hello.circle.dto;
 
 import com.practice.hello.circle.entity.CircleBoard;
 import com.practice.hello.circle.entity.CircleComment;
-import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.freeboard.entity.FreeComment;
 
 import java.util.ArrayList;
 

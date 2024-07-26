@@ -1,8 +1,5 @@
 package com.practice.hello.information.controller;
 
-import com.practice.hello.freeboard.dto.FreeCommentCreateDTO;
-import com.practice.hello.freeboard.entity.FreeComment;
-import com.practice.hello.freeboard.service.FreeCommentService;
 import com.practice.hello.information.dto.InformationCommentCreateDTO;
 import com.practice.hello.information.entity.InformationComment;
 import com.practice.hello.information.service.InformationCommentService;
