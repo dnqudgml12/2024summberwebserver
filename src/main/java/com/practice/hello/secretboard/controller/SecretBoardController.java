@@ -13,7 +13,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +26,7 @@ import java.util.Optional;
 // url 종류가 여러가지 이므로 api용이라 명시 해주기 위해 api
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/secretboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class SecretBoardController {
 
 
@@ -34,9 +36,10 @@ public class SecretBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<SecretBoard> saveBoard(@RequestBody SecretBoardCreateDTO dto) {
-
-        SecretBoard savedSecretBoard = secretBoardService.saveBoard(dto);
+    public ResponseEntity<SecretBoard> saveBoard(@RequestPart("dto") SecretBoardCreateDTO dto, @RequestPart(value = "file", required = false) MultipartFile file
+            , Principal principal) {
+        String uId = principal.getName();
+        SecretBoard savedSecretBoard = secretBoardService.saveBoard(dto, uId,file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body( savedSecretBoard);
     }
@@ -60,9 +63,11 @@ public class SecretBoardController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,Principal principal) {
+        String uId = principal.getName();
+        System.out.println("Principal email: " + uId);
         try {
-            secretBoardService.deleteBoardAndAdjustIds(id);
+            secretBoardService.deleteBoardAndAdjustIds(id, uId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             // Log the exception for debugging purposes
@@ -80,9 +85,10 @@ public class SecretBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<SecretBoard> updateBoard(@PathVariable Long id, @RequestBody SecretBoardCreateDTO dto) {
+    public ResponseEntity<SecretBoard> updateBoard(@PathVariable Long id, @RequestPart("dto") SecretBoardCreateDTO dto, Principal principal,   @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            SecretBoard updatedSecretBoard = secretBoardService.updateBoard(id, dto);
+            String uId = principal.getName();
+            SecretBoard updatedSecretBoard = secretBoardService.updateBoard(id, dto, uId,file);
             return ResponseEntity.ok(updatedSecretBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

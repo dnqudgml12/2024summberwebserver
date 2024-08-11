@@ -7,6 +7,9 @@ import com.practice.hello.circle.entity.CircleBoard;
 import com.practice.hello.freeboard.entity.FreeBoard;
 import com.practice.hello.freshman.entity.Freshman;
 import com.practice.hello.graduateboard.entity.GraduateBoard;
+import com.practice.hello.information.entity.InformationBoard;
+import com.practice.hello.secretboard.entity.SecretBoard;
+import com.practice.hello.social.entity.SocialBoard;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -65,6 +68,17 @@ public class Member {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CircleBoard> circleBoards;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InformationBoard> informationBoards;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialBoard> socialBoards;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SecretBoard> secretBoards;
 
     /* // freecomment부분도 일단 member랑 연결해야 함
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)

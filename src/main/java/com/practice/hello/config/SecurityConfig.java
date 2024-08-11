@@ -84,6 +84,15 @@ public class SecurityConfig {
                                         .requestMatchers(HttpMethod.POST, "/freeboard/save").authenticated()
                                         .requestMatchers(HttpMethod.DELETE, "/api/freeboard/delete/**").authenticated()
                                         .requestMatchers(HttpMethod.PUT, "/api/freeboard/update/**").authenticated()
+                                        .requestMatchers(HttpMethod.POST, "/circleboard/save").authenticated()
+                                        .requestMatchers(HttpMethod.DELETE, "/api/circleboard/delete/**").authenticated()
+                                        .requestMatchers(HttpMethod.PUT, "/api/circleboard/update/**").authenticated()
+                                        .requestMatchers(HttpMethod.POST, "/secretboard/save").authenticated()
+                                        .requestMatchers(HttpMethod.DELETE, "/api/secretboard/delete/**").authenticated()
+                                        .requestMatchers(HttpMethod.PUT, "/api/secretboard/update/**").authenticated()
+                                        .requestMatchers(HttpMethod.POST, "/graduateboard/save").authenticated()
+                                        .requestMatchers(HttpMethod.DELETE, "/api/graduateboard/delete/**").authenticated()
+                                        .requestMatchers(HttpMethod.PUT, "/api/graduateboard/update/**").authenticated()
                                         .anyRequest().permitAll())
                 .oauth2Login(
                         oauth2 ->

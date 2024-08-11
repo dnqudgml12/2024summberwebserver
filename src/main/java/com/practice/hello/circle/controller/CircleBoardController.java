@@ -28,7 +28,7 @@ import java.util.Optional;
 // url 종류가 여러가지 이므로 api용이라 명시 해주기 위해 api
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/circleboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class CircleBoardController {
 
 

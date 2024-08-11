@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 
 @RequestMapping("/api/freeboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class FreeReplyController {
 
     private final FreeReplyService freeReplyService;

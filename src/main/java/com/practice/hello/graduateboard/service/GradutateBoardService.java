@@ -7,6 +7,9 @@ import com.practice.hello.graduateboard.entity.GraduateComment;
 import com.practice.hello.graduateboard.repository.GradutateBoardRepository;
 import com.practice.hello.graduateboard.repository.GradutateCommentRepository;
 import com.practice.hello.graduateboard.repository.GradutateReplyRepository;
+import com.practice.hello.image.entity.Image;
+import com.practice.hello.image.repository.ImageRepository;
+import com.practice.hello.image.service.S3Service;
 import com.practice.hello.member.entity.Member;
 import com.practice.hello.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +36,8 @@ public class GradutateBoardService {
 
     private final MemberRepository memberRepository;
     private final GradutateReplyRepository gradutateReplyRepository;
-
+    private final ImageRepository imageRepository;
+    private final S3Service s3Service;
     @Transactional
     public void deleteBoardAndAdjustIds(Long id, String uId) {
 
@@ -52,6 +58,14 @@ public class GradutateBoardService {
             gradutateReplyRepository.deleteAllByGraduateCommentId(graduateComment.getId());
         }
 
+        // 이미지가 있으면 S3에서 삭제
+        Image image = graduateBoard.getImage();
+        if (image != null) {
+            String key = image.getImageUrl().substring(image.getImageUrl().lastIndexOf("/") + 1);
+            s3Service.deleteFile(key);
+            imageRepository.delete(image);
+        }
+
         // Now delete all comments associated with the board
         gradutateCommentRepository.deleteAll(graduateComments);
 
@@ -61,13 +75,25 @@ public class GradutateBoardService {
 
     }
 
-    public GraduateBoard saveBoard(GradutateBoardCreateDTO dto,String uId) {
+    public GraduateBoard saveBoard(GradutateBoardCreateDTO dto,String uId,  MultipartFile file) {
 
         log.info("Creating post for user: {}", uId);
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
 
-        GraduateBoard graduateBoard = dto.toEntity(member);
+
+        String imageUrl = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                imageUrl = s3Service.uploadFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Image image = imageUrl != null ? imageRepository.save(new Image(imageUrl)) : null;
+        // 이미지가 dto에 없이 담겨서 왔다면 null로 db에 설정 아니라면 s3버켓에 넣고 설정
+
+        GraduateBoard graduateBoard = dto.toEntity(member,image);
 
 
         gradutateBoardRepository.save(graduateBoard);
@@ -116,7 +142,7 @@ public class GradutateBoardService {
     }
 
     @Transactional
-    public GraduateBoard updateBoard(Long id, GradutateBoardCreateDTO dto,String uId) {
+    public GraduateBoard updateBoard(Long id, GradutateBoardCreateDTO dto,String uId, MultipartFile file) {
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 계정에 해당하는 사람없어용"));
         GraduateBoard graduateBoard = gradutateBoardRepository.findById(id)
@@ -124,7 +150,28 @@ public class GradutateBoardService {
         if (!graduateBoard .getMember().getUid().equals(uId)) {
             throw new IllegalArgumentException("본인 게시글만 수정 가능해용");
         }
+
+
+        Image image = graduateBoard.getImage();
+        if (file != null && !file.isEmpty()) {
+            if (image != null) {
+                String key = graduateBoard.getImage().getImageUrl().substring(graduateBoard.getImage().getImageUrl().lastIndexOf("/") + 1);
+                s3Service.deleteFile(key);
+                imageRepository.delete(image);
+            }
+            String imageUrl = null;
+            try {
+                imageUrl = s3Service.uploadFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            image = imageRepository.save(new Image(imageUrl));
+        } else if (image != null) {
+            imageRepository.delete(image);
+            image = null;
+        }
         graduateBoard.update(dto.title(), dto.content());
+        graduateBoard.setImage(image);
         return gradutateBoardRepository.save(graduateBoard);
     }
 

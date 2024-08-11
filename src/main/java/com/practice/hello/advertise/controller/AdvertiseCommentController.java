@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 
 @RequestMapping("/api/advertiseboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class AdvertiseCommentController {
 
     private final AdvertiseCommentService advertiseCommentService;

@@ -12,7 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +25,7 @@ import java.util.Optional;
 // url 종류가 여러가지 이므로 api용이라 명시 해주기 위해 api
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/socialboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class SocialBoardController {
 
 
@@ -33,9 +35,11 @@ public class SocialBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<SocialBoard> saveBoard(@RequestBody SocialBoardCreateDTO dto) {
-
-        SocialBoard savedSocialBoard = socialBoardService.saveBoard(dto);
+    public ResponseEntity<SocialBoard> saveBoard(@RequestPart("dto") SocialBoardCreateDTO dto,
+                                                 @RequestPart(value = "file", required = false) MultipartFile file,
+                                                 Principal principal) {
+        String uId = principal.getName();
+        SocialBoard savedSocialBoard = socialBoardService.saveBoard(dto, uId,file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSocialBoard);
     }
@@ -59,9 +63,10 @@ public class SocialBoardController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,Principal principal) {
+        String uId = principal.getName();
         try {
-            socialBoardService.deleteBoardAndAdjustIds(id);
+            socialBoardService.deleteBoardAndAdjustIds(id, uId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             // Log the exception for debugging purposes
@@ -79,9 +84,10 @@ public class SocialBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<SocialBoard> updateBoard(@PathVariable Long id, @RequestBody SocialBoardCreateDTO dto) {
+    public ResponseEntity<SocialBoard> updateBoard(@PathVariable Long id,@RequestPart("dto") SocialBoardCreateDTO dto, Principal principal, @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            SocialBoard updatedSocialBoard = socialBoardService.updateBoard(id, dto);
+            String uId = principal.getName();
+            SocialBoard updatedSocialBoard = socialBoardService.updateBoard(id, dto, uId,file);
             return ResponseEntity.ok(updatedSocialBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

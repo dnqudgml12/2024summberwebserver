@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 
 @RequestMapping("/api/timetable")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class Timetablecontroller {
 
     private  final Timetableservice timetableservice;

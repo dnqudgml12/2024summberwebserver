@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.Optional;
 // url 종류가 여러가지 이므로 api용이라 명시 해주기 위해 api
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/graduateboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 @Slf4j
 public class GraduateBoardController {
 
@@ -37,9 +38,11 @@ public class GraduateBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<GraduateBoard > saveBoard(@RequestBody GradutateBoardCreateDTO dto, Principal principal) {
+    public ResponseEntity<GraduateBoard > saveBoard( @RequestPart("dto") GradutateBoardCreateDTO dto,
+                                                     @RequestPart(value = "file", required = false) MultipartFile file,
+                                                     Principal principal) {
         String uId = principal.getName();
-       GraduateBoard savedGraduateBoard = gradutateBoardService.saveBoard(dto, uId);
+       GraduateBoard savedGraduateBoard = gradutateBoardService.saveBoard(dto, uId, file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body( savedGraduateBoard);
     }
@@ -89,11 +92,11 @@ public class GraduateBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<GraduateBoard> updateBoard(@PathVariable Long id, @RequestBody GradutateBoardCreateDTO dto, Principal principal) {
+    public ResponseEntity<GraduateBoard> updateBoard(@PathVariable Long id,  @RequestPart("dto") GradutateBoardCreateDTO dto, Principal principal,  @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             String uId = principal.getName();
             log.debug("Updating board with ID: {}, by user: {}", id, uId); // 디버그 로그 추가
-            GraduateBoard updatedGraduateBoard = gradutateBoardService.updateBoard(id, dto, uId);
+            GraduateBoard updatedGraduateBoard = gradutateBoardService.updateBoard(id, dto, uId,file);
             log.debug("Updated board details: {}", updatedGraduateBoard); // 디버그 로그 추가
             return ResponseEntity.ok(updatedGraduateBoard);
         } catch (RuntimeException e) {

@@ -7,6 +7,9 @@ import com.practice.hello.advertise.entity.AdvertiseComment;
 import com.practice.hello.advertise.repository.AdvertiseBoardRepository;
 import com.practice.hello.advertise.repository.AdvertiseCommentRepository;
 import com.practice.hello.advertise.repository.AdvertiseReplyRepository;
+import com.practice.hello.image.entity.Image;
+import com.practice.hello.image.repository.ImageRepository;
+import com.practice.hello.image.service.S3Service;
 import com.practice.hello.member.entity.Member;
 import com.practice.hello.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +36,8 @@ public class AdvertiseBoardService {
 
     private final MemberRepository memberRepository;
     private final AdvertiseReplyRepository advertiseReplyRepository;
-
+    private final ImageRepository imageRepository;
+    private final S3Service s3Service;
     @Transactional
     public void deleteBoardAndAdjustIds(Long id, String uId) {
         // First delete all comments associated with the board
@@ -51,6 +57,14 @@ public class AdvertiseBoardService {
         for (AdvertiseComment advertiseComment : advertiseComments) {
             advertiseReplyRepository.deleteAllByAdvertiseCommentId(advertiseComment.getId());
         }
+        // 이미지가 있으면 S3에서 삭제
+        Image image = advertiseBoard.getImage();
+        if (image != null) {
+            String key = image.getImageUrl().substring(image.getImageUrl().lastIndexOf("/") + 1);
+            s3Service.deleteFile(key);
+            imageRepository.delete(image);
+        }
+
 
         // Now delete all comments associated with the board
         advertiseCommentRepository.deleteAll(advertiseComments);
@@ -60,19 +74,30 @@ public class AdvertiseBoardService {
         advertiseBoardRepository.flush();
 
     }
-    public AdvertiseBoard saveBoard(AdvertiseBoardCreateDTO dto,String uId) {
+    public AdvertiseBoard saveBoard(AdvertiseBoardCreateDTO dto, String uId, MultipartFile file) {
 
         log.info("Creating post for user: {}", uId);
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
 
-        AdvertiseBoard advertiseBoard = dto.toEntity(member);
+        String imageUrl = null;
+        if (file != null && !file.isEmpty()) {
+            try {
+                imageUrl = s3Service.uploadFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Image image = imageUrl != null ? imageRepository.save(new Image(imageUrl)) : null;
+        // 이미지가 dto에 없이 담겨서 왔다면 null로 db에 설정 아니라면 s3버켓에 넣고 설정
+
+        AdvertiseBoard advertiseBoard = dto.toEntity(member,image);
 
 
-        advertiseBoardRepository.save(advertiseBoard);
 
 
-        return advertiseBoard;
+
+        return  advertiseBoardRepository.save(advertiseBoard);
     }
 
 
@@ -113,7 +138,7 @@ public class AdvertiseBoardService {
     }
 
     @Transactional
-    public AdvertiseBoard updateBoard(Long id, AdvertiseBoardCreateDTO dto,String uId) {
+    public AdvertiseBoard updateBoard(Long id, AdvertiseBoardCreateDTO dto,String uId,MultipartFile file) {
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 계정에 해당하는 사람없어용"));
 
@@ -123,7 +148,28 @@ public class AdvertiseBoardService {
         if (!advertiseBoard .getMember().getUid().equals(uId)) {
             throw new IllegalArgumentException("본인 게시글만 수정 가능해용");
         }
+
+
+        Image image = advertiseBoard.getImage();
+        if (file != null && !file.isEmpty()) {
+            if (image != null) {
+                String key = advertiseBoard.getImage().getImageUrl().substring(advertiseBoard.getImage().getImageUrl().lastIndexOf("/") + 1);
+                s3Service.deleteFile(key);
+                imageRepository.delete(image);
+            }
+            String imageUrl = null;
+            try {
+                imageUrl = s3Service.uploadFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            image = imageRepository.save(new Image(imageUrl));
+        } else if (image != null) {
+            imageRepository.delete(image);
+            image = null;
+        }
         advertiseBoard.update(dto.title(), dto.content());
+        advertiseBoard.setImage(image);
         return advertiseBoardRepository.save(advertiseBoard);
     }
 

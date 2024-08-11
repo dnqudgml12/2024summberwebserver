@@ -2,6 +2,7 @@ package com.practice.hello.graduateboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.practice.hello.image.entity.Image;
 import com.practice.hello.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -77,9 +78,13 @@ public class GraduateBoard {
 
 
 
+    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @Builder //Setter역할 한다
-    public GraduateBoard(String title, String content, String author, int likes, List<GraduateComment> graduateComment, Member member) {
+    public GraduateBoard(String title, String content, String author, int likes, List<GraduateComment> graduateComment, Member member, Image image) {
         this.title = title;
         this.content = content;
         this.author = author;
@@ -87,6 +92,7 @@ public class GraduateBoard {
         this.likes = likes;
         this.graduateComment = graduateComment != null ? graduateComment : new ArrayList<>();
         this.likeStatus = false; // Initialize likeStatus to false (not liked)
+        this.image = image;
     }
 
 
@@ -109,5 +115,7 @@ public class GraduateBoard {
         }
     }
 
-
+    public void setImage(Image image) {
+        this.image=image;
+    }
 }

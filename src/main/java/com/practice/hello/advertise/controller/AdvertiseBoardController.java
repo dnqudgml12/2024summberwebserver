@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.Optional;
 // url 종류가 여러가지 이므로 api용이라 명시 해주기 위해 api
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/advertiseboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 //배포 후에
 //@CrossOrigin(origins = "https://2024-summberwebfront.vercel.app/")
 @Slf4j
@@ -38,9 +39,12 @@ public class AdvertiseBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<AdvertiseBoard> saveBoard(@RequestBody AdvertiseBoardCreateDTO dto, Principal principal) {
+    public ResponseEntity<AdvertiseBoard> saveBoard(
+            @RequestPart("dto") AdvertiseBoardCreateDTO dto,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            Principal principal) {
         String uId = principal.getName();
-        AdvertiseBoard savedAdvertiseBoard = advetiseBoardService.saveBoard(dto, uId);
+        AdvertiseBoard savedAdvertiseBoard = advetiseBoardService.saveBoard(dto, uId,file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAdvertiseBoard);
     }
@@ -86,11 +90,12 @@ public class AdvertiseBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<AdvertiseBoard> updateBoard(@PathVariable Long id, @RequestBody AdvertiseBoardCreateDTO dto, Principal principal) {
+    public ResponseEntity<AdvertiseBoard> updateBoard(@PathVariable Long id,  @RequestPart("dto")AdvertiseBoardCreateDTO dto, Principal principal,
+                                                      @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             String uId = principal.getName();
             log.debug("Updating board with ID: {}, by user: {}", id, uId); // 디버그 로그 추가
-            AdvertiseBoard updatedAdvertiseBoard = advetiseBoardService.updateBoard(id, dto,uId);
+            AdvertiseBoard updatedAdvertiseBoard = advetiseBoardService.updateBoard(id, dto,uId,file);
             log.debug("Updated board details: {}", updatedAdvertiseBoard); // 디버그 로그 추가
             return ResponseEntity.ok(updatedAdvertiseBoard);
         } catch (RuntimeException e) {

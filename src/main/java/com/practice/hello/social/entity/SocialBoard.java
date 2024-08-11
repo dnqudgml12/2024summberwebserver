@@ -1,6 +1,9 @@
 package com.practice.hello.social.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.practice.hello.image.entity.Image;
+import com.practice.hello.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -33,6 +36,11 @@ public class SocialBoard {
 
 
     private Long id;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "socialBoards"}) // 순환 참조 방지 및 프론트에도 memberid값을 멤버로 보내게 하기 위해
+//@JsonBackReference
+    private Member member;
 
     // 명시 안해줘도 같은거를 찾는다
     //title이라는 컬럼을 찾아서 null이 아니도록 해준다.
@@ -66,29 +74,34 @@ public class SocialBoard {
     // orphanRemoval -> 연관관계가 끊어지면 자식이 삭제가 됨
     @JsonManagedReference
     private List<SocialComment> socialComment;
-
+    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
 
 
     @Builder //Setter역할 한다
-    public SocialBoard(String title, String content, String author, int likes, List<SocialComment> socialComment) {
+    public SocialBoard(String title, String content, String author, int likes, List<SocialComment> socialComment,Member member, Image image) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.likes = likes;
+        this.member = member;
         this.socialComment = socialComment != null ? socialComment : new ArrayList<>();
         this.likeStatus = false; // Initialize likeStatus to false (not liked)
+        this.image = image;
     }
 
 
     //수정 함수, DB안에 있는 객체를 수정 하니까
     // 객체 안에 수정은 이 안에서 이루어져야 한다.
-    public void update(String title, String content, String author) {
+    public void update(String title, String content) {
         this.title = title;
         this.content = content;
-        this.author = author;
 
     }
+
 
 
     public void setLikeStatus(boolean likeStatus) {
@@ -98,6 +111,9 @@ public class SocialBoard {
         } else {
             this.likes--;
         }
+    }
+    public void setImage(Image image) {
+        this.image=image;
     }
 
 

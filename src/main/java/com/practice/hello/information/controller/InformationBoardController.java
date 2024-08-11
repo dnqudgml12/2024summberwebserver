@@ -12,7 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +25,7 @@ import java.util.Optional;
 // url 종류가 여러가지 이므로 api용이라 명시 해주기 위해 api
 // 일일이 적는거를 생략하기 위해 request mapping
 @RequestMapping("/api/informationboard")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class InformationBoardController {
 
 
@@ -33,9 +35,9 @@ public class InformationBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<InformationBoard> saveBoard(@RequestBody InformationBoardCreateDTO dto) {
-
-        InformationBoard savedInformationBoard = informationBoardService.saveBoard(dto);
+    public ResponseEntity<InformationBoard> saveBoard( @RequestPart("dto")  InformationBoardCreateDTO dto, Principal principal, @RequestPart(value = "file", required = false) MultipartFile file) {
+        String uId = principal.getName();
+        InformationBoard savedInformationBoard = informationBoardService.saveBoard(dto, uId,file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedInformationBoard);
     }
@@ -59,9 +61,11 @@ public class InformationBoardController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,Principal principal) {
+        String uId = principal.getName();
+        System.out.println("Principal email: " + uId); // Debug statement
         try {
-            informationBoardService.deleteBoardAndAdjustIds(id);
+            informationBoardService.deleteBoardAndAdjustIds(id, uId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             // Log the exception for debugging purposes
@@ -79,9 +83,10 @@ public class InformationBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<InformationBoard> updateBoard(@PathVariable Long id, @RequestBody InformationBoardCreateDTO dto) {
+    public ResponseEntity<InformationBoard> updateBoard(@PathVariable Long id, @RequestPart("dto")InformationBoardCreateDTO dto, Principal principal, @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            InformationBoard updatedInformationBoard = informationBoardService.updateBoard(id, dto);
+            String uId = principal.getName();
+            InformationBoard updatedInformationBoard = informationBoardService.updateBoard(id, dto, uId,file);
             return ResponseEntity.ok(updatedInformationBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
