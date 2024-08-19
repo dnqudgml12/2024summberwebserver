@@ -77,7 +77,7 @@ public class AdvertiseBoard {
     @JsonManagedReference
     private List<AdvertiseComment> advertiseComment;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "advertiseBoard-image")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;

@@ -78,10 +78,11 @@ public class FreeBoard {
     @JsonManagedReference
     private List<FreeComment> freeComment;
 
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_id")
-    private Image image;
+   // @JsonManagedReference
+   @JsonManagedReference(value = "freeBoard-image")
+   @OneToOne(cascade = CascadeType.ALL)
+   @JoinColumn(name = "image_id")
+   private Image image;
 
 
     @Builder //Setter역할 한다

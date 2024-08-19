@@ -2,7 +2,6 @@ package com.practice.hello.information.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.practice.hello.image.entity.Image;
 import com.practice.hello.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -76,14 +75,11 @@ public class InformationBoard {
     @JsonManagedReference
     private List<InformationComment> informationComment;
 
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_id")
-    private Image image;
+
 
 
     @Builder //Setter역할 한다
-    public InformationBoard(String title, String content, String author, int likes, List<InformationComment> informationComment,Member member,Image image) {
+    public InformationBoard(String title, String content, String author, int likes, List<InformationComment> informationComment,Member member) {
         this.title = title;
         this.content = content;
         this.author = author;
@@ -91,7 +87,6 @@ public class InformationBoard {
         this.member = member;
         this.informationComment = informationComment != null ? informationComment : new ArrayList<>();
         this.likeStatus = false; // Initialize likeStatus to false (not liked)
-        this.image = image;
     }
 
 
@@ -112,10 +107,6 @@ public class InformationBoard {
         } else {
             this.likes--;
         }
-    }
-
-    public void setImage(Image image) {
-        this.image=image;
     }
 
 

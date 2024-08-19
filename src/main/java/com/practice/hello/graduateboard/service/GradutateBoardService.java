@@ -109,7 +109,7 @@ public class GradutateBoardService {
 
 
     public Optional<GraduateBoard> getBoardById(Long id) {
- log.error("getBoardById 함수실행");
+        log.error("getBoardById 함수실행");
         return gradutateBoardRepository.findById(id);
     }
 

@@ -2,7 +2,6 @@ package com.practice.hello.social.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.practice.hello.image.entity.Image;
 import com.practice.hello.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -74,15 +73,12 @@ public class SocialBoard {
     // orphanRemoval -> 연관관계가 끊어지면 자식이 삭제가 됨
     @JsonManagedReference
     private List<SocialComment> socialComment;
-    @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_id")
-    private Image image;
+
 
 
 
     @Builder //Setter역할 한다
-    public SocialBoard(String title, String content, String author, int likes, List<SocialComment> socialComment,Member member, Image image) {
+    public SocialBoard(String title, String content, String author, int likes, List<SocialComment> socialComment,Member member) {
         this.title = title;
         this.content = content;
         this.author = author;
@@ -90,7 +86,6 @@ public class SocialBoard {
         this.member = member;
         this.socialComment = socialComment != null ? socialComment : new ArrayList<>();
         this.likeStatus = false; // Initialize likeStatus to false (not liked)
-        this.image = image;
     }
 
 
@@ -111,9 +106,6 @@ public class SocialBoard {
         } else {
             this.likes--;
         }
-    }
-    public void setImage(Image image) {
-        this.image=image;
     }
 
 

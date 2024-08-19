@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -35,11 +34,9 @@ public class SocialBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<SocialBoard> saveBoard(@RequestPart("dto") SocialBoardCreateDTO dto,
-                                                 @RequestPart(value = "file", required = false) MultipartFile file,
-                                                 Principal principal) {
+    public ResponseEntity<SocialBoard> saveBoard(@RequestBody SocialBoardCreateDTO dto, Principal principal) {
         String uId = principal.getName();
-        SocialBoard savedSocialBoard = socialBoardService.saveBoard(dto, uId,file);
+        SocialBoard savedSocialBoard = socialBoardService.saveBoard(dto, uId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSocialBoard);
     }
@@ -84,10 +81,10 @@ public class SocialBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<SocialBoard> updateBoard(@PathVariable Long id,@RequestPart("dto") SocialBoardCreateDTO dto, Principal principal, @RequestPart(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<SocialBoard> updateBoard(@PathVariable Long id, @RequestBody SocialBoardCreateDTO dto, Principal principal) {
         try {
             String uId = principal.getName();
-            SocialBoard updatedSocialBoard = socialBoardService.updateBoard(id, dto, uId,file);
+            SocialBoard updatedSocialBoard = socialBoardService.updateBoard(id, dto, uId);
             return ResponseEntity.ok(updatedSocialBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

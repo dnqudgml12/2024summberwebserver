@@ -54,7 +54,7 @@ public class AdvertiseBoardController {
 
     public ResponseEntity<List<AdvertiseBoard>> readBoard() {
 
-       List<AdvertiseBoard> advertiseBoard = advetiseBoardService.readBoardAll();
+        List<AdvertiseBoard> advertiseBoard = advetiseBoardService.readBoardAll();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(advertiseBoard);
     }

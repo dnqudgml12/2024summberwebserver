@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -36,10 +35,9 @@ public class SecretBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<SecretBoard> saveBoard(@RequestPart("dto") SecretBoardCreateDTO dto, @RequestPart(value = "file", required = false) MultipartFile file
-            , Principal principal) {
+    public ResponseEntity<SecretBoard> saveBoard(@RequestBody SecretBoardCreateDTO dto, Principal principal) {
         String uId = principal.getName();
-        SecretBoard savedSecretBoard = secretBoardService.saveBoard(dto, uId,file);
+        SecretBoard savedSecretBoard = secretBoardService.saveBoard(dto, uId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body( savedSecretBoard);
     }
@@ -85,10 +83,10 @@ public class SecretBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<SecretBoard> updateBoard(@PathVariable Long id, @RequestPart("dto") SecretBoardCreateDTO dto, Principal principal,   @RequestPart(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<SecretBoard> updateBoard(@PathVariable Long id, @RequestBody SecretBoardCreateDTO dto, Principal principal) {
         try {
             String uId = principal.getName();
-            SecretBoard updatedSecretBoard = secretBoardService.updateBoard(id, dto, uId,file);
+            SecretBoard updatedSecretBoard = secretBoardService.updateBoard(id, dto, uId);
             return ResponseEntity.ok(updatedSecretBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

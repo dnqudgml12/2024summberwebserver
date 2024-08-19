@@ -76,11 +76,13 @@ public class Freshman {
     // orphanRemoval -> 연관관계가 끊어지면 자식이 삭제가 됨
     @JsonManagedReference
     private List<FreshmanComment> freshmanComment;
+    // @JsonManagedReference 일대일은 여기서는 선언 필요 없
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "freshman-image")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
+
 
 
     @Builder //Setter역할 한다
@@ -114,11 +116,8 @@ public class Freshman {
             this.likes--;
         }
     }
-
-
     public void setImage(Image image) {
         this.image=image;
     }
-
 
 }

@@ -2,9 +2,6 @@ package com.practice.hello.information.service;
 
 
 import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.image.entity.Image;
-import com.practice.hello.image.repository.ImageRepository;
-import com.practice.hello.image.service.S3Service;
 import com.practice.hello.information.dto.InformationBoardCreateDTO;
 import com.practice.hello.information.entity.InformationBoard;
 import com.practice.hello.information.entity.InformationComment;
@@ -18,9 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +30,7 @@ public class InformationBoardService {
 
     private final MemberRepository memberRepository;
     private final InformationReplyRepository informationReplyRepository;
-    private final ImageRepository imageRepository;
-    private final S3Service s3Service;
+
     @Transactional
     public void deleteBoardAndAdjustIds(Long id, String uId) {
         // First delete all comments associated with the board
@@ -57,14 +51,6 @@ public class InformationBoardService {
             informationReplyRepository.deleteAllByInformationCommentId(informationComment.getId());
         }
 
-        // 이미지가 있으면 S3에서 삭제
-        Image image = informationBoard.getImage();
-        if (image != null) {
-            String key = image.getImageUrl().substring(image.getImageUrl().lastIndexOf("/") + 1);
-            s3Service.deleteFile(key);
-            imageRepository.delete(image);
-        }
-
         // Now delete all comments associated with the board
         informationCommentRepository.deleteAll(informationComments);
 
@@ -73,21 +59,11 @@ public class InformationBoardService {
         informationBoardRepository.flush();
 
     }
-    public InformationBoard saveBoard(InformationBoardCreateDTO dto, String uId, MultipartFile file) {
+    public InformationBoard saveBoard(InformationBoardCreateDTO dto, String uId) {
 
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
-        String imageUrl = null;
-        if (file != null && !file.isEmpty()) {
-            try {
-                imageUrl = s3Service.uploadFile(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Image image = imageUrl != null ? imageRepository.save(new Image(imageUrl)) : null;
-        // 이미지가 dto에 없이 담겨서 왔다면 null로 db에 설정 아니라면 s3버켓에 넣고 설정
-        InformationBoard informationBoard = dto.toEntity(member,image);
+        InformationBoard informationBoard = dto.toEntity(member);
 
 
 
@@ -133,7 +109,7 @@ public class InformationBoardService {
     }
 
     @Transactional
-    public InformationBoard updateBoard(Long id, InformationBoardCreateDTO dto,String uId,MultipartFile file) {
+    public InformationBoard updateBoard(Long id, InformationBoardCreateDTO dto,String uId) {
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 계정에 해당하는 사람없어용"));
         InformationBoard informationBoard = informationBoardRepository.findById(id)
@@ -141,28 +117,7 @@ public class InformationBoardService {
         if (!informationBoard.getMember().getUid().equals(uId)) {
             throw new IllegalArgumentException("본인 게시글만 수정 가능해용");
         }
-
-        Image image = informationBoard.getImage();
-        if (file != null && !file.isEmpty()) {
-            if (image != null) {
-                String key = informationBoard.getImage().getImageUrl().substring(informationBoard.getImage().getImageUrl().lastIndexOf("/") + 1);
-                s3Service.deleteFile(key);
-                imageRepository.delete(image);
-            }
-            String imageUrl = null;
-            try {
-                imageUrl = s3Service.uploadFile(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            image = imageRepository.save(new Image(imageUrl));
-        } else if (image != null) {
-            imageRepository.delete(image);
-            image = null;
-        }
-
         informationBoard.update(dto.title(), dto.content());
-        informationBoard.setImage(image);
         return informationBoardRepository.save(informationBoard);
     }
 

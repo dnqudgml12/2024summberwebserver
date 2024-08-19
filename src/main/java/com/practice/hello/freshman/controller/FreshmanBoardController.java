@@ -52,7 +52,7 @@ public class FreshmanBoardController {
 
     public ResponseEntity<List<Freshman>> readBoard() {
 
-       List<Freshman> freshman = freshmanBoardService.readBoardAll();
+        List<Freshman> freshman = freshmanBoardService.readBoardAll();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(freshman);
     }

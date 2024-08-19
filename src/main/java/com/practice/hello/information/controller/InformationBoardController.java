@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -35,9 +34,9 @@ public class InformationBoardController {
 
 
     @PostMapping("/save")
-    public ResponseEntity<InformationBoard> saveBoard( @RequestPart("dto")  InformationBoardCreateDTO dto, Principal principal, @RequestPart(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<InformationBoard> saveBoard(@RequestBody InformationBoardCreateDTO dto, Principal principal) {
         String uId = principal.getName();
-        InformationBoard savedInformationBoard = informationBoardService.saveBoard(dto, uId,file);
+        InformationBoard savedInformationBoard = informationBoardService.saveBoard(dto, uId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedInformationBoard);
     }
@@ -83,10 +82,10 @@ public class InformationBoardController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<InformationBoard> updateBoard(@PathVariable Long id, @RequestPart("dto")InformationBoardCreateDTO dto, Principal principal, @RequestPart(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<InformationBoard> updateBoard(@PathVariable Long id, @RequestBody InformationBoardCreateDTO dto, Principal principal) {
         try {
             String uId = principal.getName();
-            InformationBoard updatedInformationBoard = informationBoardService.updateBoard(id, dto, uId,file);
+            InformationBoard updatedInformationBoard = informationBoardService.updateBoard(id, dto, uId);
             return ResponseEntity.ok(updatedInformationBoard);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

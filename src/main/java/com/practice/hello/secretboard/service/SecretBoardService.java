@@ -3,9 +3,6 @@ package com.practice.hello.secretboard.service;
 
 
 import com.practice.hello.freeboard.entity.FreeBoard;
-import com.practice.hello.image.entity.Image;
-import com.practice.hello.image.repository.ImageRepository;
-import com.practice.hello.image.service.S3Service;
 import com.practice.hello.member.entity.Member;
 import com.practice.hello.member.repository.MemberRepository;
 import com.practice.hello.secretboard.dto.SecretBoardCreateDTO;
@@ -19,9 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +31,7 @@ public class SecretBoardService {
 
 
     private final SecretReplyRepository secretReplyRepository;
-    private final ImageRepository imageRepository;
-    private final S3Service s3Service;
+
     @Transactional
     public void deleteBoardAndAdjustIds(Long id, String uId) {
         // First delete all comments associated with the board
@@ -55,13 +49,6 @@ public class SecretBoardService {
         for (SecretComment secretComment : secretComments ) {
             secretReplyRepository.deleteAllBySecretCommentId(secretComment.getId());
         }
-        // 이미지가 있으면 S3에서 삭제
-        Image image = secretBoard.getImage();
-        if (image != null) {
-            String key = image.getImageUrl().substring(image.getImageUrl().lastIndexOf("/") + 1);
-            s3Service.deleteFile(key);
-            imageRepository.delete(image);
-        }
 
         // Now delete all comments associated with the board
         secretCommentRepository.deleteAll(secretComments);
@@ -71,27 +58,16 @@ public class SecretBoardService {
         secretBoardRepository.flush();
 
     }
-    public SecretBoard saveBoard(SecretBoardCreateDTO dto, String uId,  MultipartFile file) {
+    public SecretBoard saveBoard(SecretBoardCreateDTO dto, String uId) {
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 이메일에 해당하는 사람없어용"));
 
-        String imageUrl = null;
-        if (file != null && !file.isEmpty()) {
-            try {
-                imageUrl = s3Service.uploadFile(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Image image = imageUrl != null ? imageRepository.save(new Image(imageUrl)) : null;
-        // 이미지가 dto에 없이 담겨서 왔다면 null로 db에 설정 아니라면 s3버켓에 넣고 설정
-
-        SecretBoard secretBoard = dto.toEntity(member,image);
+        SecretBoard secretBoard = dto.toEntity(member);
 
 
+        secretBoardRepository.save(secretBoard);
 
-
-        return secretBoardRepository.save(secretBoard);
+        return secretBoard;
     }
 
 
@@ -132,7 +108,7 @@ public class SecretBoardService {
     }
 
     @Transactional
-    public SecretBoard updateBoard(Long id, SecretBoardCreateDTO dto,String uId, MultipartFile file) {
+    public SecretBoard updateBoard(Long id, SecretBoardCreateDTO dto,String uId) {
         Member member = memberRepository.findByUid(uId)
                 .orElseThrow(() -> new IllegalArgumentException("이 계정에 해당하는 사람없어용"));
         SecretBoard secretBoard = secretBoardRepository.findById(id)
@@ -140,28 +116,7 @@ public class SecretBoardService {
         if (!secretBoard.getMember().getUid().equals(uId)) {
             throw new IllegalArgumentException("본인 게시글만 수정 가능해용");
         }
-
-
-        Image image = secretBoard.getImage();
-        if (file != null && !file.isEmpty()) {
-            if (image != null) {
-                String key = secretBoard.getImage().getImageUrl().substring(secretBoard.getImage().getImageUrl().lastIndexOf("/") + 1);
-                s3Service.deleteFile(key);
-                imageRepository.delete(image);
-            }
-            String imageUrl = null;
-            try {
-                imageUrl = s3Service.uploadFile(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            image = imageRepository.save(new Image(imageUrl));
-        } else if (image != null) {
-            imageRepository.delete(image);
-            image = null;
-        }
         secretBoard.update(dto.title(), dto.content());
-        secretBoard.setImage(image);
         return secretBoardRepository.save(secretBoard);
     }
 

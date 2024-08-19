@@ -42,7 +42,7 @@ public class GraduateBoardController {
                                                      @RequestPart(value = "file", required = false) MultipartFile file,
                                                      Principal principal) {
         String uId = principal.getName();
-       GraduateBoard savedGraduateBoard = gradutateBoardService.saveBoard(dto, uId, file);
+        GraduateBoard savedGraduateBoard = gradutateBoardService.saveBoard(dto, uId, file);
 
         return ResponseEntity.status(HttpStatus.CREATED).body( savedGraduateBoard);
     }
@@ -52,7 +52,7 @@ public class GraduateBoardController {
 
     public ResponseEntity<List<GraduateBoard>> readBoard() {
 
-       List<GraduateBoard> graduateBoard= gradutateBoardService.readBoardAll();
+        List<GraduateBoard> graduateBoard= gradutateBoardService.readBoardAll();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(graduateBoard);
     }
