@@ -93,6 +93,7 @@ public class SecurityConfig {
                                         .requestMatchers(HttpMethod.POST, "/graduateboard/save").authenticated()
                                         .requestMatchers(HttpMethod.DELETE, "/api/graduateboard/delete/**").authenticated()
                                         .requestMatchers(HttpMethod.PUT, "/api/graduateboard/update/**").authenticated()
+                                        .requestMatchers("/ws/**").permitAll() // WebSocket 경로 허용
                                         .anyRequest().permitAll())
                 .oauth2Login(
                         oauth2 ->

@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.1'
+	id 'org.springframework.boot' version '3.3.1'  // Spring Boot 최신 버전 사용
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(17)  // Java 17 사용
 	}
 }
 
@@ -20,29 +20,45 @@ configurations {
 }
 
 repositories {
-	mavenCentral()
+	mavenCentral()  // 중앙 Maven 저장소를 사용
 }
 
 dependencies {
+	// Spring Cloud AWS (Amazon Web Services 사용)
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'com.google.auth:google-auth-library-oauth2-http:1.24.0'
-	implementation 'com.google.api-client:google-api-client:2.6.0'
+
+	// Spring Boot 기본 기능들
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'  // JPA 및 Hibernate
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'  // WebSocket 기능 추가
+	implementation 'org.springframework.boot:spring-boot-starter-web'  // Spring MVC 웹 애플리케이션 개발
+	implementation 'org.springframework.boot:spring-boot-starter-security'  // Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'  // OAuth2 클라이언트 (Google OAuth 등)
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'  // OAuth2 리소스 서버
+
+	// Google OAuth 및 API 클라이언트
+	implementation 'com.google.auth:google-auth-library-oauth2-http:1.24.0'  // Google OAuth2 클라이언트 라이브러리
+	implementation 'com.google.api-client:google-api-client:2.6.0'  // Google API 클라이언트
+	implementation 'com.google.http-client:google-http-client-gson:1.44.2'  // Gson과 함께 Google HTTP 클라이언트 사용
+
+	// H2 Database (테스트 및 로컬 개발 환경)
 	implementation "com.h2database:h2"
-	implementation 'com.google.http-client:google-http-client-gson:1.44.2'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	compileOnly 'org.projectlombok:lombok'
+
+	// MySQL Connector (MySQL 데이터베이스 연결)
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Spring Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Lombok - 컴파일 시 코드 생성
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'  // JUnit 테스트 런처
 
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+	useJUnitPlatform()  // JUnit Platform 사용
 }
